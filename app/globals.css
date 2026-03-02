@@ -319,6 +319,16 @@ body {
     max-width: 100% !important;
   }
 
+  /* Reset artificial paper constraints so native browser engine takes over */
+  .pdf-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
   /* Page breaks logic to prevent chopping tables/rows */
   table {
     page-break-inside: auto !important;

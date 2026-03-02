@@ -276,21 +276,23 @@ export default function HomePage() {
           {/* Bottom action area */}
           <div style={{ borderTop: "1px solid #e5e7eb", background: "#f9fafb", flexShrink: 0 }}>
             {/* PDF Export */}
-            <button
-              className="btn-export"
-              onClick={handleDownloadPDF}
-              style={{ opacity: 1, cursor: "pointer" }}
-            >
-              <>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" /></svg>
-                Exportar PDF Oficial
-              </>
-            </button>
-            <div style={{ marginTop: "8px", textAlign: "center" }}>
-              <span style={{ fontSize: "10px", color: "#9ca3af" }}>
-                {templates.find(t => t.id === activeTemplate)?.icon}&nbsp;
-                {templates.find(t => t.id === activeTemplate)?.label}&nbsp;·&nbsp;Carta (Letter)
-              </span>
+            <div style={{ padding: "14px 16px 12px" }}>
+              <button
+                className="btn-export"
+                onClick={handleDownloadPDF}
+                style={{ opacity: 1, cursor: "pointer" }}
+              >
+                <>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" /></svg>
+                  Exportar PDF Oficial
+                </>
+              </button>
+              <div style={{ marginTop: "8px", textAlign: "center" }}>
+                <span style={{ fontSize: "10px", color: "#9ca3af" }}>
+                  {templates.find(t => t.id === activeTemplate)?.icon}&nbsp;
+                  {templates.find(t => t.id === activeTemplate)?.label}&nbsp;·&nbsp;Carta (Letter)
+                </span>
+              </div>
             </div>
           </div>
         </div>
