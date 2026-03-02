@@ -325,13 +325,20 @@ body {
     margin: 0;
   }
 
+  /* Condense typography specifically for print to prevent text from overflowing the 1056px fixed bounds */
+  .pdf-document {
+    font-size: 10pt !important;
+    line-height: 1.45 !important;
+  }
+
   /* Lock the container to true Letter size (8.5 x 11 inches at 96 DPI) */
   .pdf-page {
     width: 816px !important;
     height: 1056px !important;
     min-height: 1056px !important;
     max-height: 1056px !important;
-    padding: 72px 64px 80px 72px !important;
+    /* Reduce top/bottom padding slightly to give content more breathing room */
+    padding: 50px 64px 80px 64px !important;
     margin: 0 !important;
     box-shadow: none !important;
     page-break-after: always !important;
@@ -345,6 +352,18 @@ body {
     margin: 0 !important;
     padding: 0 !important;
     background: transparent !important;
+  }
+
+  .pdf-section-body {
+    margin-bottom: 8px !important;
+  }
+
+  .pdf-table {
+    margin: 8px 0 !important;
+  }
+
+  .pdf-letterhead {
+    margin-bottom: 16px !important;
   }
 
   /* Page breaks logic to prevent chopping tables/rows */
