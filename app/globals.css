@@ -313,20 +313,38 @@ body {
     color: transparent !important;
   }
 
-  /* Allow containers to expand to full page width */
-  div[style*="width: 816px"] {
-    width: 100% !important;
-    max-width: 100% !important;
+  /* Force perfect colors */
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* Reset artificial paper constraints so native browser engine takes over */
+  /* Define physical paper and strip browser headers/margins */
+  @page {
+    size: letter portrait;
+    margin: 0;
+  }
+
+  /* Lock the container to true Letter size (8.5 x 11 inches at 96 DPI) */
   .pdf-page {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-height: auto !important;
-    padding: 0 !important;
+    width: 816px !important;
+    height: 1056px !important;
+    min-height: 1056px !important;
+    max-height: 1056px !important;
+    padding: 72px 64px 80px 72px !important;
     margin: 0 !important;
     box-shadow: none !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    position: relative !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .print-page-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
   }
 
   /* Page breaks logic to prevent chopping tables/rows */

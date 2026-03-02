@@ -350,6 +350,7 @@ export default function HomePage() {
           {/* ★ THE PAPER — This div will be cloned by react-to-print */}
           <div
             ref={contentRef}
+            className="print-page-wrapper"
             style={{ width: "816px", maxWidth: "100%", background: "white" }}
           >
             {activeTemplate === "sgsst" && <SGSSTPreview data={sgsst} />}
