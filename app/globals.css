@@ -404,3 +404,21 @@ body {
     break-inside: avoid !important;
   }
 }
+
+/* ── html2canvas export overrides ── */
+/* When html2pdf is running, we add this class to the container to flatten complex UI elements that might crash Safari's canvas renderer */
+.exporting-pdf {
+  background: white !important;
+}
+
+.exporting-pdf * {
+  box-shadow: none !important;
+}
+
+/* Ensure the canvas doesn't try to render scrollbars or flex boundaries */
+.exporting-pdf,
+.exporting-pdf>div {
+  height: auto !important;
+  overflow: visible !important;
+  display: block !important;
+}

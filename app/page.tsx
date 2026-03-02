@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 import WirinLogo from "./components/WirinLogo";
 import SGSSTForm, { SGSSTData } from "./components/forms/SGSSTForm";
@@ -169,16 +169,30 @@ export default function HomePage() {
 
   // ── html2pdf: manual canvas-to-pdf engine ──────────────────────────
   const contentRef = useRef<HTMLDivElement>(null);
+  const html2pdfRef = useRef<any>(null);
+
+  useEffect(() => {
+    // Precarga silenciosa para asegurar que el click sea síncrono frente al navegador y Chrome no bloquee la descarga auto-generada
+    import('html2pdf.js').then((html2pdfModule) => {
+      html2pdfRef.current = html2pdfModule.default;
+    }).catch(err => console.error("Failed to load html2pdf", err));
+  }, []);
 
   const handleDownloadPDF = async () => {
     if (!contentRef.current) return;
+    if (!html2pdfRef.current) {
+      alert("El motor de PDF aún está cargando. Intenta de nuevo en unos segundos.");
+      return;
+    }
 
-    // Importación dinámica obligatoria para evitar error 'self is not defined' en SSR (Next.js)
-    const html2pdf = (await import('html2pdf.js')).default;
+    const html2pdf = html2pdfRef.current;
+
+    // Aplanar temporalmente bordes o estilos locos de React/Tailwind para que Safari/Html2Canvas no tire errores
+    contentRef.current.classList.add("exporting-pdf");
 
     // Configurar html2pdf para crear un documento fluido sin cortes estrictos
     const opt: any = {
-      margin: 15, // Márgenes mínimos en píxeles (no pulgadas/mm rígidos)
+      margin: [15, 0, 15, 0], // Top, Right, Bottom, Left
       filename: `WirinAmbiental_${activeTemplate.toUpperCase()}_${today.replace(/-/g, "")}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: {
@@ -186,20 +200,24 @@ export default function HomePage() {
         useCORS: true,      // Cargar imágenes externas si hay
         scrollY: 0,         // Evitar desfase por scroll vertical
         windowWidth: 816,   // Forzar ancho estilo Carta para el renderizado consistente
+        logging: false,     // Desactivar logs que llenan la consola de Safari
       },
       jsPDF: {
         unit: 'px',
-        format: [816, contentRef.current.scrollHeight + (contentRef.current.scrollHeight * 0.05)], // MAGIA: Asigna la altura del papel dinámicamente según el contenido, logrando un lienzo continuo real de 1 página gigante.
+        format: [816, contentRef.current.scrollHeight + (contentRef.current.scrollHeight * 0.05)], // Altura calculada dinámicamente
         orientation: 'portrait'
       },
-      pagebreak: { mode: 'avoid-all' } // Extra capa: prohibir cortes automáticos en pdf
+      pagebreak: { mode: 'avoid-all' }
     };
 
     try {
       await html2pdf().set(opt).from(contentRef.current).save();
     } catch (err) {
-      console.error("Error generando PDF:", err);
-      alert("Hubo un error al generar el PDF. Revisa la consola.");
+      console.error("Error generando PDF en Safari/Chrome:", err);
+      alert("Hubo un error al generar el PDF. Revisa tener módulos limpios de caracteres sueltos o SVG rotos.");
+    } finally {
+      // Restaurar CSS UI
+      contentRef.current.classList.remove("exporting-pdf");
     }
   };
 
