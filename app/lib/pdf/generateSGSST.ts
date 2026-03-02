@@ -4,6 +4,7 @@ import { SGSSTData } from "@/app/components/forms/SGSSTForm";
 import {
     WIRIN, MARGIN, CONTENT_W,
     drawHeader, drawFooter, addSectionTitle, addBodyText, drawSignatures, fmtDate,
+    loadLogo, downloadPDF,
 } from "../pdfHelpers";
 
 function fmtDateLong(dateStr: string): string {
@@ -15,7 +16,8 @@ function fmtDateLong(dateStr: string): string {
     } catch { return dateStr; }
 }
 
-export function generateSGSST(data: SGSSTData) {
+export async function generateSGSST(data: SGSSTData) {
+    await loadLogo();
     const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "letter" });
 
     const P = data.projectName || "[Nombre del Proyecto]";
@@ -268,5 +270,5 @@ export function generateSGSST(data: SGSSTData) {
         drawFooter(doc, CODE, version, docDate);
     }
 
-    doc.save(`SGSST_WirinAmbiental_${P.replace(/\s+/g, "_").substring(0, 30)}.pdf`);
+    downloadPDF(doc, `SGSST_WirinAmbiental_${P.replace(/\s+/g, "_").substring(0, 30)}.pdf`);
 }

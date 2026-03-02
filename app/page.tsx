@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { generateSGSST } from "./lib/pdf/generateSGSST";
 import { generatePRE } from "./lib/pdf/generatePRE";
+import { generateGeneric } from "./lib/pdf/generateGeneric";
 import dynamic from "next/dynamic";
 import WirinLogo from "./components/WirinLogo";
 import SGSSTForm, { SGSSTData } from "./components/forms/SGSSTForm";
@@ -170,16 +171,38 @@ export default function HomePage() {
   const [pre, setPre] = useState<PREData>(defaultPRE);
 
   // ── jsPDF: programmatic PDF generation ──────────────────────────────────
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     switch (activeTemplate) {
       case "sgsst":
-        generateSGSST(sgsst);
+        await generateSGSST(sgsst);
         break;
       case "pre":
-        generatePRE(pre);
+        await generatePRE(pre);
         break;
-      default:
-        alert(`El generador PDF para "${templates.find(t => t.id === activeTemplate)?.label}" está en desarrollo. Próximamente disponible.`);
+      case "pts":
+        await generateGeneric("pts", pts);
+        break;
+      case "epp":
+        await generateGeneric("epp", epp);
+        break;
+      case "ppr":
+        await generateGeneric("ppr", ppr);
+        break;
+      case "ast":
+        await generateGeneric("ast", ast);
+        break;
+      case "vehiculo":
+        await generateGeneric("vehiculo", vehiculo);
+        break;
+      case "charla":
+        await generateGeneric("charla", charla);
+        break;
+      case "comunicacion":
+        await generateGeneric("comunicacion", comunicacion);
+        break;
+      case "odi":
+        await generateGeneric("odi", odi);
+        break;
     }
   };
 

@@ -4,9 +4,11 @@ import { PREData } from "@/app/components/forms/PREForm";
 import {
     WIRIN, PAGE_W, PAGE_H, MARGIN, CONTENT_W,
     drawHeader, drawFooter, addSectionTitle, addBodyText, drawSignatures, fmtDate,
+    loadLogo, downloadPDF,
 } from "../pdfHelpers";
 
-export function generatePRE(data: PREData) {
+export async function generatePRE(data: PREData) {
+    await loadLogo();
     const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "letter" });
 
     const CODE = "WA-PRE-001";
@@ -227,7 +229,7 @@ export function generatePRE(data: PREData) {
         drawFooter(doc, CODE, VERSION, docDate);
     }
 
-    doc.save(`PRE_MEDEVAC_WirinAmbiental.pdf`);
+    downloadPDF(doc, `PRE_MEDEVAC_WirinAmbiental.pdf`);
 }
 
 // ─── Bullet list helper ─────────────────────────────────────────────────────
