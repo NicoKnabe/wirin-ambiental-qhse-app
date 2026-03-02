@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { generateSGSST } from "./lib/pdf/generateSGSST";
-import { generatePRE } from "./lib/pdf/generatePRE";
-import { generateGeneric } from "./lib/pdf/generateGeneric";
+import { usePDFExport } from "./hooks/usePDFExport";
 import dynamic from "next/dynamic";
 import WirinLogo from "./components/WirinLogo";
 import SGSSTForm, { SGSSTData } from "./components/forms/SGSSTForm";
@@ -171,39 +169,14 @@ export default function HomePage() {
   const [pre, setPre] = useState<PREData>(defaultPRE);
 
   // ── jsPDF: programmatic PDF generation ──────────────────────────────────
-  const handleDownloadPDF = async () => {
-    switch (activeTemplate) {
-      case "sgsst":
-        await generateSGSST(sgsst);
-        break;
-      case "pre":
-        await generatePRE(pre);
-        break;
-      case "pts":
-        await generateGeneric("pts", pts);
-        break;
-      case "epp":
-        await generateGeneric("epp", epp);
-        break;
-      case "ppr":
-        await generateGeneric("ppr", ppr);
-        break;
-      case "ast":
-        await generateGeneric("ast", ast);
-        break;
-      case "vehiculo":
-        await generateGeneric("vehiculo", vehiculo);
-        break;
-      case "charla":
-        await generateGeneric("charla", charla);
-        break;
-      case "comunicacion":
-        await generateGeneric("comunicacion", comunicacion);
-        break;
-      case "odi":
-        await generateGeneric("odi", odi);
-        break;
-    }
+  const { exportar, cargando, error: pdfError } = usePDFExport();
+
+  const dataMap: Record<string, unknown> = {
+    sgsst, pts, epp, ppr, ast, vehiculo, charla, comunicacion, odi, pre,
+  };
+
+  const handleDownloadPDF = () => {
+    exportar(activeTemplate, dataMap[activeTemplate]);
   };
 
   return (
@@ -304,10 +277,22 @@ export default function HomePage() {
               <button
                 className="btn-export"
                 onClick={handleDownloadPDF}
+                disabled={cargando}
+                style={{ opacity: cargando ? 0.6 : 1, cursor: cargando ? "wait" : "pointer" }}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" /></svg>
-                Exportar PDF Oficial
+                {cargando ? (
+                  <>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="animate-spin"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" opacity=".25" /><path d="M20 12h2A10 10 0 0 0 12 2v2a8 8 0 0 1 8 8z" /></svg>
+                    Generando PDF…
+                  </>
+                ) : (
+                  <>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" /></svg>
+                    Exportar PDF Oficial
+                  </>
+                )}
               </button>
+              {pdfError && <p style={{ color: "#dc2626", fontSize: "12px", marginTop: "6px" }}>⚠ {pdfError}</p>}
               <div style={{ marginTop: "8px", textAlign: "center" }}>
                 <span style={{ fontSize: "10px", color: "#9ca3af" }}>
                   {templates.find(t => t.id === activeTemplate)?.icon}&nbsp;
