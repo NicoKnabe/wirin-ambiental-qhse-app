@@ -422,3 +422,10 @@ body {
   overflow: visible !important;
   display: block !important;
 }
+
+/* Hard delete interactive elements from the render tree to avoid Canvas Security Errors in WebKit (Safari/iOS) */
+.exporting-pdf .hide-on-export {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

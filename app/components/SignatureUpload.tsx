@@ -62,7 +62,7 @@ export default function SignatureUpload({
 
                 {/* Interactive overlay — hide-on-export */}
                 <div
-                    className="hide-on-export"
+                    className="hide-on-export signature-interactive-overlay"
                     onClick={() => fileRef.current?.click()}
                     onMouseEnter={() => setHovering(true)}
                     onMouseLeave={() => setHovering(false)}
@@ -88,7 +88,7 @@ export default function SignatureUpload({
                                     onClick={clear}
                                     style={{ fontSize: "10px", color: "#c62828", background: "none", border: "none", cursor: "pointer", fontWeight: 700 }}
                                 >
-                                    ✕ Quitar
+                                    ✖ Quitar
                                 </button>
                             </div>
                         )
@@ -105,8 +105,8 @@ export default function SignatureUpload({
                 ref={fileRef}
                 type="file"
                 accept="image/png,image/jpeg,image/jpg"
-                className="hide-on-export"
-                style={{ display: "none" }}
+                className="hide-on-export input-file-hidden"
+                style={{ position: "absolute", opacity: 0, width: 0, height: 0, pointerEvents: "none" }}
                 onChange={handleFile}
             />
 
