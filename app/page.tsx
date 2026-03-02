@@ -290,10 +290,9 @@ export default function HomePage() {
         {/* ============ RIGHT PANEL: Preview (this is what gets printed) ============ */}
         <div
           ref={printRef}
-          className="print-block"
+          className="h-screen overflow-y-auto pb-32"
           style={{
             flex: 1,
-            overflowY: "auto",
             background: "#e8eee8",
             padding: "24px",
             display: "flex",
@@ -340,7 +339,7 @@ export default function HomePage() {
           </div>
 
           {/* Document Preview */}
-          <div className="print-block" style={{ width: "816px", maxWidth: "100%" }}>
+          <div style={{ width: "816px", maxWidth: "100%" }}>
             {activeTemplate === "sgsst" && <SGSSTPreview data={sgsst} />}
             {activeTemplate === "pts" && <PTSPreview data={pts} />}
             {activeTemplate === "epp" && <EPPPreview data={epp} />}

@@ -281,93 +281,28 @@ body {
 @media print {
   @page {
     size: letter;
-    margin: 15mm 10mm;
-  }
-
-  /* Force brand / background colours to print */
-  * {
-    -webkit-print-color-adjust: exact !important;
-    color-adjust: exact !important;
-    print-color-adjust: exact !important;
+    margin: 15mm 15mm;
   }
 
   body {
-    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
-  /* UI-only elements — hidden in PDF */
-  .no-print {
-    display: none !important;
-  }
-
-  /* ─── KEY FIX: neutralise flex/grid which breaks break-inside in WebKit ─── */
-  .print-block,
-  .print-block * {
-    display: block !important;
-  }
-
-  /* ─── Prevent content splitting across pages ─── */
+  /* Protege tablas y firmas sin destruir flexbox interno */
+  table,
   tr,
   td,
   th,
-  img,
-  li,
-  .firma-container,
+  .firma-box,
   .evitar-corte {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    page-break-after: avoid !important;
-    break-after: avoid !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Reduce widows and orphans in paragraphs */
-  p {
-    orphans: 3;
-    widows: 3;
-  }
-
-  /* ─── Safe table behaviour across pages ─── */
-  table {
-    page-break-inside: auto !important;
-    border-collapse: collapse !important;
-    width: 100% !important;
-  }
-
-  thead {
-    display: table-header-group !important;
-  }
-
-  tfoot {
-    display: table-footer-group !important;
-  }
-
-  /* Explicit page break helpers */
-  .break-before-page {
-    page-break-before: always !important;
-    break-before: page !important;
-  }
-
-  .bloque-firma,
-  .pdf-signature-box,
-  .pdf-section-body {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Remove decorations that don't belong in print */
-  .pdf-container,
-  .pdf-page {
-    box-shadow: none !important;
-    border-radius: 0 !important;
+  /* Oculta la UI en el PDF — método infalible */
+  .no-print,
+  .esconder-al-imprimir {
+    display: none !important;
   }
 }

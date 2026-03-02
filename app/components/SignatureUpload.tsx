@@ -66,6 +66,7 @@ export default function SignatureUpload({
         <div style={{ textAlign: "center", flex: 1 }}>
             {/* Signature area */}
             <div
+                className="esconder-al-imprimir"
                 onClick={() => fileRef.current?.click()}
                 onMouseEnter={() => setHovering(true)}
                 onMouseLeave={() => setHovering(false)}
@@ -95,7 +96,7 @@ export default function SignatureUpload({
                         />
                         {/* Hover overlay */}
                         {hovering && (
-                            <div style={{
+                            <div className="esconder-al-imprimir" style={{
                                 position: "absolute", inset: 0,
                                 background: "rgba(255,255,255,0.75)",
                                 display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
@@ -111,7 +112,7 @@ export default function SignatureUpload({
                         )}
                     </>
                 ) : (
-                    <span style={{ fontSize: small ? "8px" : "9px", color: hovering ? "#4CAF50" : "#bdbdbd", pointerEvents: "none" }}>
+                    <span className="esconder-al-imprimir" style={{ fontSize: small ? "8px" : "9px", color: hovering ? "#4CAF50" : "#bdbdbd", pointerEvents: "none" }}>
                         {hovering ? "⬆ Subir firma PNG/JPG" : "✎ Firma"}
                     </span>
                 )}

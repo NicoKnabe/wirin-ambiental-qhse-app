@@ -106,7 +106,7 @@ export default function PREPreview({ data }: Props) {
                     <div style={{ border: "1px solid #000", padding: "4px 8px", backgroundColor: "#1B5E20", color: "white", fontWeight: "bold", fontSize: "9pt", borderBottom: "none" }}>
                         3. FLUJOGRAMA DE COMUNICACIÓN MEDEVAC
                     </div>
-                    <div style={{ border: "1px solid #000", padding: "15px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", backgroundColor: "#fdfdfd" }}>
+                    <div className="print:break-inside-avoid" style={{ border: "1px solid #000", padding: "15px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", backgroundColor: "#fdfdfd" }}>
 
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
                             <div style={{ backgroundColor: "#ef4444", color: "white", padding: "8px 16px", borderRadius: "4px", fontWeight: "bold", fontSize: "9pt", textAlign: "center", width: "300px", border: "2px solid #b91c1c" }}>
@@ -155,6 +155,7 @@ export default function PREPreview({ data }: Props) {
                 </div>
 
                 {/* ===== PROTOCOLOS DE TERRENO ===== */}
+                <div style={{ pageBreakBefore: 'always', clear: 'both' }} className="esconder-al-imprimir"></div>
                 <div style={{ marginBottom: "15px" }}>
                     <div style={{ border: "1px solid #000", padding: "4px 8px", backgroundColor: "#1B5E20", color: "white", fontWeight: "bold", fontSize: "9pt", borderBottom: "none" }}>
                         4. PROTOCOLOS ESPECÍFICOS DE TERRENO
@@ -196,6 +197,7 @@ export default function PREPreview({ data }: Props) {
                 </div>
 
                 {/* ===== MATRIZ DE EVACUACIÓN (TABLA DINÁMICA) ===== */}
+                <div style={{ pageBreakBefore: 'always', clear: 'both' }} className="esconder-al-imprimir"></div>
                 <div style={{ marginBottom: "15px", pageBreakInside: "avoid" }}>
                     <div style={{ border: "1px solid #000", padding: "4px 8px", backgroundColor: "#1B5E20", color: "white", fontWeight: "bold", fontSize: "9pt", borderBottom: "none" }}>
                         5. MATRIZ DE EVACUACIÓN Y CENTROS ASISTENCIALES
