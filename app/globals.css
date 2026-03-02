@@ -276,37 +276,71 @@ body {
 
 
 /* ============================================
-   WYSIWYG PDF EXPORTING STYLES (html2pdf.js)
+   NATIVE WYSIWYG PRINT STYLES (react-to-print)
    ============================================ */
-.exporting-pdf .hide-on-export,
-.exporting-pdf button,
-.exporting-pdf input[type="file"] {
-  display: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  height: 0 !important;
-  width: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
+@media print {
 
-.exporting-pdf input[type="text"],
-.exporting-pdf textarea {
-  border: none !important;
-  background: transparent !important;
-  color: inherit !important;
-  resize: none !important;
-  outline: none !important;
-}
+  /* Hide interactive elements not needed in PDF */
+  .hide-on-print,
+  .hide-on-export,
+  button,
+  input[type="file"] {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
 
-.exporting-pdf input::placeholder,
-.exporting-pdf textarea::placeholder {
-  color: transparent !important;
-}
+  /* Make inputs and textareas look like normal text */
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  textarea {
+    border: none !important;
+    background: transparent !important;
+    color: inherit !important;
+    resize: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
 
-/* Mantiene juntas áreas clave */
-.firma-box,
-.evitar-corte {
-  page-break-inside: avoid !important;
-  break-inside: avoid !important;
+  input::placeholder,
+  textarea::placeholder {
+    color: transparent !important;
+  }
+
+  /* Allow containers to expand to full page width */
+  div[style*="width: 816px"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Page breaks logic to prevent chopping tables/rows */
+  table {
+    page-break-inside: auto !important;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tfoot {
+    display: table-footer-group !important;
+  }
+
+  /* Mantiene juntas áreas clave */
+  .firma-box,
+  .evitar-corte {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
 }
