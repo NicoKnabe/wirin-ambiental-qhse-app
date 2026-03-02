@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useReactToPrint } from "react-to-print";
 import dynamic from "next/dynamic";
 import WirinLogo from "./components/WirinLogo";
 import SGSSTForm, { SGSSTData } from "./components/forms/SGSSTForm";
@@ -167,59 +168,28 @@ export default function HomePage() {
   const [odi, setOdi] = useState<ODIData>(defaultODI);
   const [pre, setPre] = useState<PREData>(defaultPRE);
 
-  // ── html2pdf: manual canvas-to-pdf engine ──────────────────────────
+  // ── react-to-print: Master continuous scrolling PDF solution ──
   const contentRef = useRef<HTMLDivElement>(null);
-  const html2pdfRef = useRef<any>(null);
+  const [docHeight, setDocHeight] = useState(1056);
 
+  // Mantiene sincronizada la altura real en píxeles del documento
   useEffect(() => {
-    // Precarga silenciosa para asegurar que el click sea síncrono frente al navegador y Chrome no bloquee la descarga auto-generada
-    import('html2pdf.js').then((html2pdfModule) => {
-      html2pdfRef.current = html2pdfModule.default;
-    }).catch(err => console.error("Failed to load html2pdf", err));
-  }, []);
-
-  const handleDownloadPDF = async () => {
     if (!contentRef.current) return;
-    if (!html2pdfRef.current) {
-      alert("El motor de PDF aún está cargando. Intenta de nuevo en unos segundos.");
-      return;
-    }
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        // Agregamos un colchón de 60px para evitar cortes matemáticos
+        setDocHeight(Math.ceil(entry.contentRect.height) + 60);
+      }
+    });
+    observer.observe(contentRef.current);
+    return () => observer.disconnect();
+  }, [activeTemplate]);
 
-    const html2pdf = html2pdfRef.current;
-
-    // Aplanar temporalmente bordes o estilos locos de React/Tailwind para que Safari/Html2Canvas no tire errores
-    contentRef.current.classList.add("exporting-pdf");
-
-    // Configurar html2pdf para crear un documento fluido sin cortes estrictos
-    const opt: any = {
-      margin: [15, 0, 15, 0], // Top, Right, Bottom, Left
-      filename: `WirinAmbiental_${activeTemplate.toUpperCase()}_${today.replace(/-/g, "")}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 2,           // Mejor resolución
-        useCORS: true,      // Cargar imágenes externas si hay
-        scrollY: 0,         // Evitar desfase por scroll vertical
-        windowWidth: 816,   // Forzar ancho estilo Carta para el renderizado consistente
-        logging: false,     // Desactivar logs que llenan la consola de Safari
-      },
-      jsPDF: {
-        unit: 'px',
-        format: [816, contentRef.current.scrollHeight + (contentRef.current.scrollHeight * 0.05)], // Altura calculada dinámicamente
-        orientation: 'portrait'
-      },
-      pagebreak: { mode: 'avoid-all' }
-    };
-
-    try {
-      await html2pdf().set(opt).from(contentRef.current).save();
-    } catch (err) {
-      console.error("Error generando PDF en Safari/Chrome:", err);
-      alert("Hubo un error al generar el PDF. Revisa tener módulos limpios de caracteres sueltos o SVG rotos.");
-    } finally {
-      // Restaurar CSS UI
-      contentRef.current.classList.remove("exporting-pdf");
-    }
-  };
+  const handleDownloadPDF = useReactToPrint({
+    contentRef,
+    documentTitle: `WirinAmbiental_${activeTemplate.toUpperCase()}_${today.replace(/-/g, "")}`,
+    onPrintError: (error) => console.error("Error al imprimir:", error),
+  });
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#f0f4f0", overflow: "hidden" }}>
@@ -390,8 +360,21 @@ export default function HomePage() {
           <div
             ref={contentRef}
             className="print-page-wrapper"
-            style={{ width: "816px", maxWidth: "100%", background: "white" }}
+            style={{ width: "816px", maxWidth: "100%", background: "white", position: "relative" }}
           >
+            {/* INYECCIÓN MAESTRA: Forzamos el tamaño exacto del papel según el contenido */}
+            <style type="text/css" media="print">{`
+              @page {
+                size: 816px ${docHeight}px !important;
+                margin: 0 !important;
+              }
+              body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                margin: 0 !important;
+              }
+            `}</style>
+
             {activeTemplate === "sgsst" && <SGSSTPreview data={sgsst} />}
             {activeTemplate === "pts" && <PTSPreview data={pts} />}
             {activeTemplate === "epp" && <EPPPreview data={epp} />}
