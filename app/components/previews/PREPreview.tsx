@@ -89,7 +89,7 @@ export default function PREPreview({ data }: Props) {
                 </table>
 
                 {/* ===== OBJETIVO ===== */}
-                <div style={{ marginBottom: "15px" }}>
+                <div style={{ marginBottom: "15px", pageBreakInside: "avoid" }}>
                     <div style={{ border: "1px solid #000", padding: "4px 8px", backgroundColor: "#1B5E20", color: "white", fontWeight: "bold", fontSize: "9pt", borderBottom: "none" }}>
                         2. OBJETIVO DEL PLAN Y MEDEVAC
                     </div>

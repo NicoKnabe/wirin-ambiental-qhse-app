@@ -24,7 +24,6 @@ export default function ComChecklistPreview({ data }: Props) {
                 className="bg-white shadow-2xl relative"
                 style={{
                     width: "210mm",
-                    minHeight: "297mm",
                     padding: "20mm 15mm 25mm 15mm",
                     margin: "0 auto",
                     fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",

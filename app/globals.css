@@ -72,10 +72,10 @@ body {
 }
 
 .pdf-page {
-  width: 816px;
-  min-height: 1056px;
+  width: 100%;
+  height: auto;
   background: white;
-  padding: 72px 64px 80px 72px;
+  padding: 40px 64px;
   position: relative;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
   margin: 0 auto 24px auto;
@@ -354,21 +354,27 @@ body {
     background: transparent !important;
   }
 
-  .pdf-section-body {
-    margin-bottom: 8px !important;
+  /* Page breaks logic to prevent chopping content */
+  table,
+  tbody,
+  tr,
+  td,
+  th {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
-  .pdf-table {
-    margin: 8px 0 !important;
+  .pdf-section-body,
+  p,
+  ul,
+  li {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
-  .pdf-letterhead {
-    margin-bottom: 16px !important;
-  }
-
-  /* Page breaks logic to prevent chopping tables/rows */
-  table {
-    page-break-inside: auto !important;
+  .pdf-signature-box {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   tr {
