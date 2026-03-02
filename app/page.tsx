@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useReactToPrint } from "react-to-print";
+import html2pdf from "html2pdf.js";
 import dynamic from "next/dynamic";
 import WirinLogo from "./components/WirinLogo";
 import SGSSTForm, { SGSSTData } from "./components/forms/SGSSTForm";
@@ -168,12 +168,38 @@ export default function HomePage() {
   const [odi, setOdi] = useState<ODIData>(defaultODI);
   const [pre, setPre] = useState<PREData>(defaultPRE);
 
-  // ── react-to-print: native browser print dialog ──────────────────────────
+  // ── html2pdf: manual canvas-to-pdf engine ──────────────────────────
   const contentRef = useRef<HTMLDivElement>(null);
-  const handleDownloadPDF = useReactToPrint({
-    contentRef: contentRef,
-    documentTitle: `WirinAmbiental_${activeTemplate.toUpperCase()}_${today.replace(/-/g, "")}`,
-  });
+
+  const handleDownloadPDF = async () => {
+    if (!contentRef.current) return;
+
+    // Configurar html2pdf para crear un documento fluido sin cortes estrictos
+    const opt: any = {
+      margin: 15, // Márgenes mínimos en píxeles (no pulgadas/mm rígidos)
+      filename: `WirinAmbiental_${activeTemplate.toUpperCase()}_${today.replace(/-/g, "")}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2,           // Mejor resolución
+        useCORS: true,      // Cargar imágenes externas si hay
+        scrollY: 0,         // Evitar desfase por scroll vertical
+        windowWidth: 816,   // Forzar ancho estilo Carta para el renderizado consistente
+      },
+      jsPDF: {
+        unit: 'px',
+        format: [816, contentRef.current.scrollHeight + (contentRef.current.scrollHeight * 0.05)], // MAGIA: Asigna la altura del papel dinámicamente según el contenido, logrando un lienzo continuo real de 1 página gigante.
+        orientation: 'portrait'
+      },
+      pagebreak: { mode: 'avoid-all' } // Extra capa: prohibir cortes automáticos en pdf
+    };
+
+    try {
+      await html2pdf().set(opt).from(contentRef.current).save();
+    } catch (err) {
+      console.error("Error generando PDF:", err);
+      alert("Hubo un error al generar el PDF. Revisa la consola.");
+    }
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#f0f4f0", overflow: "hidden" }}>
