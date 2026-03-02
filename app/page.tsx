@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useReactToPrint } from "react-to-print";
+import { useState } from "react";
+import { generateSGSST } from "./lib/pdf/generateSGSST";
+import { generatePRE } from "./lib/pdf/generatePRE";
 import dynamic from "next/dynamic";
 import WirinLogo from "./components/WirinLogo";
 import SGSSTForm, { SGSSTData } from "./components/forms/SGSSTForm";
@@ -168,12 +169,19 @@ export default function HomePage() {
   const [odi, setOdi] = useState<ODIData>(defaultODI);
   const [pre, setPre] = useState<PREData>(defaultPRE);
 
-  // ── react-to-print: native browser print engine ──────────────────────────
-  const printRef = useRef<HTMLDivElement>(null);
-  const handlePrint = useReactToPrint({
-    contentRef: printRef,
-    documentTitle: `Wirin_Ambiental_${templates.find(t => t.id === activeTemplate)?.label ?? 'Documento'}`,
-  });
+  // ── jsPDF: programmatic PDF generation ──────────────────────────────────
+  const handleDownloadPDF = () => {
+    switch (activeTemplate) {
+      case "sgsst":
+        generateSGSST(sgsst);
+        break;
+      case "pre":
+        generatePRE(pre);
+        break;
+      default:
+        alert(`El generador PDF para "${templates.find(t => t.id === activeTemplate)?.label}" está en desarrollo. Próximamente disponible.`);
+    }
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#f0f4f0", overflow: "hidden" }}>
@@ -272,7 +280,7 @@ export default function HomePage() {
             <div style={{ padding: "14px 16px 12px" }}>
               <button
                 className="btn-export"
-                onClick={() => handlePrint()}
+                onClick={handleDownloadPDF}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" /></svg>
                 Exportar PDF Oficial
@@ -339,7 +347,7 @@ export default function HomePage() {
 
           {/* ★ THE PAPER — Only this prints. Block layout, no flex. */}
           <div
-            ref={printRef}
+            /* Preview only — PDF generated programmatically via jsPDF */
             style={{ width: "816px", maxWidth: "100%", background: "white" }}
           >
             {activeTemplate === "sgsst" && <SGSSTPreview data={sgsst} />}
