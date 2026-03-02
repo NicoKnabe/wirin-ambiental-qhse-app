@@ -184,10 +184,7 @@ body {
 }
 
 .pdf-footer {
-  position: absolute;
-  bottom: 24px;
-  left: 64px;
-  right: 64px;
+  margin-top: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -196,6 +193,8 @@ body {
   font-size: 8pt;
   color: #6b7280;
   font-family: 'Inter', sans-serif;
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
 }
 
 /* ============================================
@@ -321,8 +320,14 @@ body {
 
   /* Define physical paper and strip browser headers/margins */
   @page {
-    size: letter portrait;
-    margin: 0;
+    margin: 15mm;
+  }
+
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
   }
 
   /* Condense typography specifically for print to prevent text from overflowing the 1056px fixed bounds */

@@ -170,12 +170,10 @@ export default function HomePage() {
 
   // ── react-to-print: native browser print dialog ──────────────────────────
   const contentRef = useRef<HTMLDivElement>(null);
-
   const handleDownloadPDF = useReactToPrint({
     contentRef: contentRef,
     documentTitle: `WirinAmbiental_${activeTemplate.toUpperCase()}_${today.replace(/-/g, "")}`,
     pageStyle: `
-      @page { size: letter portrait; margin: 15mm; }
       @media print {
         body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       }
