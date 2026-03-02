@@ -25,6 +25,11 @@ interface SignatureUploadProps {
  * 2. Shows the uploaded PNG/JPEG image when one is selected
  * 3. Provides a hover overlay to change/clear the image
  * 4. Works for both form-side (interactive) and preview-side (display-only)
+ *
+ * PDF RULES:
+ * - The <input type="file"> and interactive controls are ALWAYS hidden in print
+ * - If a signature image exists, it prints
+ * - If no image, a blank space prints (for manual signing)
  */
 export default function SignatureUpload({
     label,
@@ -52,7 +57,6 @@ export default function SignatureUpload({
             onSignatureChange?.(result);
         };
         reader.readAsDataURL(file);
-        // Reset so same file can be re-uploaded
         e.target.value = "";
     };
 
@@ -64,9 +68,23 @@ export default function SignatureUpload({
 
     return (
         <div style={{ textAlign: "center", flex: 1 }}>
-            {/* Signature area */}
+
+            {/* ── PRINT-ONLY: signature image OR blank signing space ── */}
+            <div className="hidden print:!block" style={{ height: `${height}px`, borderBottom: "1px solid #000", marginBottom: "6px" }}>
+                {hasImage && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                        src={localUrl!}
+                        alt="Firma digital"
+                        style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", margin: "0 auto" }}
+                    />
+                )}
+                {/* If no image, the empty div acts as space for manual signing */}
+            </div>
+
+            {/* ── SCREEN-ONLY: interactive upload area ── */}
             <div
-                className="esconder-al-imprimir"
+                className="print:!hidden"
                 onClick={() => fileRef.current?.click()}
                 onMouseEnter={() => setHovering(true)}
                 onMouseLeave={() => setHovering(false)}
@@ -94,9 +112,8 @@ export default function SignatureUpload({
                             alt="Firma digital"
                             style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
                         />
-                        {/* Hover overlay */}
                         {hovering && (
-                            <div className="esconder-al-imprimir" style={{
+                            <div style={{
                                 position: "absolute", inset: 0,
                                 background: "rgba(255,255,255,0.75)",
                                 display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
@@ -112,22 +129,23 @@ export default function SignatureUpload({
                         )}
                     </>
                 ) : (
-                    <span className="esconder-al-imprimir" style={{ fontSize: small ? "8px" : "9px", color: hovering ? "#4CAF50" : "#bdbdbd", pointerEvents: "none" }}>
+                    <span style={{ fontSize: small ? "8px" : "9px", color: hovering ? "#4CAF50" : "#bdbdbd", pointerEvents: "none" }}>
                         {hovering ? "⬆ Subir firma PNG/JPG" : "✎ Firma"}
                     </span>
                 )}
             </div>
 
-            {/* Hidden input */}
+            {/* Hidden file input — ALWAYS hidden, even on screen */}
             <input
                 ref={fileRef}
                 type="file"
                 accept="image/png,image/jpeg,image/jpg"
+                className="print:!hidden"
                 style={{ display: "none" }}
                 onChange={handleFile}
             />
 
-            {/* Name + Role */}
+            {/* Name + Role — always visible in both screen and print */}
             {label && (
                 <p style={{
                     fontSize: small ? "6.5pt" : "7pt",

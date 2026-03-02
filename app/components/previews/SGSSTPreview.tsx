@@ -202,11 +202,11 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
                     </tbody>
                 </table>
 
-                <div style={{ pageBreakBefore: 'always', clear: 'both' }} className="esconder-al-imprimir"></div>
+                <div style={{ pageBreakBefore: 'always', clear: 'both' }} className="!hidden print:!block"></div>
                 <div className="pdf-section-title">10. Seguimiento, Medición y Auditoría</div>
                 <div className="pdf-section-body">Se realizarán inspecciones planeadas y no planeadas al uso y estado de EPP, vehículos y herramientas. Mensualmente se enviará a <strong>{C}</strong> el reporte de horas hombre trabajadas y estadísticas de accidentabilidad conforme al Art. 73 del DS 44.</div>
 
-                <div style={{ pageBreakBefore: 'always', clear: 'both' }} className="esconder-al-imprimir"></div>
+                <div style={{ pageBreakBefore: 'always', clear: 'both' }} className="!hidden print:!block"></div>
                 <div className="pdf-section-title">11. INVESTIGACIÓN DE INCIDENTES Y ACCIDENTES</div>
                 <div className="pdf-section-body">
                     Todo incidente (con o sin tiempo perdido) será reportado a la jefatura directa en un plazo máximo de 24 horas. El objetivo principal es identificar las causas raíces mediante metodologías estandarizadas (como el Árbol de Causas) para evitar su repetición. El supervisor a cargo y el Asesor SSO conformarán el equipo investigador, recopilando evidencias, testimonios y registros del lugar. Posteriormente, se elaborará un informe técnico que definirá las medidas correctivas y preventivas, designando responsables y plazos de ejecución. El cierre del incidente solo se concretará una vez verificada la implementación efectiva de dichas medidas en terreno.

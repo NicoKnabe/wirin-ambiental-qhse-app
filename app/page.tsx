@@ -287,9 +287,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ============ RIGHT PANEL: Preview (this is what gets printed) ============ */}
+        {/* ============ RIGHT PANEL: Scrollable preview column ============ */}
         <div
-          ref={printRef}
           className="h-screen overflow-y-auto pb-32"
           style={{
             flex: 1,
@@ -300,8 +299,8 @@ export default function HomePage() {
             alignItems: "center",
           }}
         >
-          {/* Preview Header Bar — hidden on print */}
-          <div className="no-print" style={{
+          {/* Preview Header Bar — screen only, NOT inside the print ref */}
+          <div style={{
             width: "816px",
             maxWidth: "100%",
             background: "white",
@@ -338,8 +337,12 @@ export default function HomePage() {
             <div style={{ fontSize: "10px", color: "#9ca3af" }}>816 × 1056 px</div>
           </div>
 
-          {/* Document Preview */}
-          <div style={{ width: "816px", maxWidth: "100%" }}>
+          {/* ★ THE PAPER — ref goes HERE. Only this prints. Block layout, no flex. */}
+          <div
+            ref={printRef}
+            className="print:!shadow-none print:!p-0 print:!m-0 print:!w-full print:!max-w-none"
+            style={{ width: "816px", maxWidth: "100%", background: "white" }}
+          >
             {activeTemplate === "sgsst" && <SGSSTPreview data={sgsst} />}
             {activeTemplate === "pts" && <PTSPreview data={pts} />}
             {activeTemplate === "epp" && <EPPPreview data={epp} />}
