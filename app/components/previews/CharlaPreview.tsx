@@ -35,7 +35,7 @@ export default function CharlaPreview({ data }: Props) {
     // Lo dejaremos dinámico, pero con una tabla sólida.
 
     return (
-        <div className="bg-gray-200 p-4 sm:p-8 min-h-screen flex justify-center overflow-auto">
+        <div className="bg-gray-200 p-4 sm:p-8 ">
             <div
                 id="charla-preview"
                 className="bg-white shadow-2xl relative"

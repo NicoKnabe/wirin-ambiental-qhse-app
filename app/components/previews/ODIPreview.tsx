@@ -57,7 +57,7 @@ export default function ODIPreview({ data }: Props) {
     );
 
     return (
-        <div className="bg-gray-200 p-4 sm:p-8 min-h-screen flex justify-center overflow-auto">
+        <div className="bg-gray-200 p-4 sm:p-8 ">
             <div
                 id="odi-preview"
                 className="bg-white shadow-2xl relative pdf-container"

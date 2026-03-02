@@ -18,7 +18,7 @@ export default function VehiculoPreview({ data }: Props) {
         : "DD/MM/YYYY";
 
     return (
-        <div className="bg-gray-200 p-4 sm:p-8 min-h-screen flex justify-center overflow-auto">
+        <div className="bg-gray-200 p-4 sm:p-8 ">
             <div
                 id="vehiculo-preview"
                 className="bg-white shadow-2xl relative"

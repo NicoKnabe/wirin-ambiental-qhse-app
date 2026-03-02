@@ -324,7 +324,9 @@ body {
   }
 
   html,
-  body {
+  body,
+  .print-page-wrapper,
+  .print-page-wrapper>div {
     height: auto !important;
     overflow: visible !important;
     display: block !important;
@@ -364,12 +366,12 @@ body {
   tbody,
   tr,
   td,
-  th {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
+  th,
   .pdf-section-body,
+  .pdf-section-body>div,
+  .cover-box,
+  .approval-box,
+  .pdf-signature-box,
   p,
   ul,
   li {

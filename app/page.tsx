@@ -173,11 +173,6 @@ export default function HomePage() {
   const handleDownloadPDF = useReactToPrint({
     contentRef: contentRef,
     documentTitle: `WirinAmbiental_${activeTemplate.toUpperCase()}_${today.replace(/-/g, "")}`,
-    pageStyle: `
-      @media print {
-        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      }
-    `,
   });
 
   return (
@@ -297,7 +292,7 @@ export default function HomePage() {
 
         {/* ============ RIGHT PANEL: Scrollable preview column ============ */}
         <div
-          className="h-screen overflow-y-auto pb-32"
+          className="h-screen overflow-y-auto pb-32 print:block print:overflow-visible print:p-0 print:bg-white print:h-auto"
           style={{
             flex: 1,
             background: "#e8eee8",
