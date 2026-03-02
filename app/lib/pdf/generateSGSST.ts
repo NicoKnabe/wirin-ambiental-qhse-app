@@ -1,13 +1,10 @@
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import { SGSSTData } from "@/app/components/forms/SGSSTForm";
 import {
-    WIRIN, PAGE_W, MARGIN, CONTENT_W,
+    WIRIN, MARGIN, CONTENT_W,
     drawHeader, drawFooter, addSectionTitle, addBodyText, drawSignatures, fmtDate,
 } from "../pdfHelpers";
-
-// Helper: autoTable types
-type AutoTableOptions = Parameters<typeof import("jspdf-autotable").default>[0];
 
 function fmtDateLong(dateStr: string): string {
     if (!dateStr) return "[Sin fecha]";
@@ -65,7 +62,7 @@ export function generateSGSST(data: SGSSTData) {
     y += 26;
 
     // Project metadata table
-    (doc as unknown as { autoTable: (opts: Record<string, unknown>) => void }).autoTable({
+    autoTable(doc, {
         startY: y,
         head: [],
         body: [
@@ -88,7 +85,8 @@ export function generateSGSST(data: SGSSTData) {
         didDrawPage: pageHook,
     });
 
-    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 5;
 
     // §1. Objetivo y Alcance
     y = addSectionTitle(doc, y, "1. Objetivo y Alcance");
@@ -104,7 +102,7 @@ export function generateSGSST(data: SGSSTData) {
     y = addSectionTitle(doc, y, "3. Marco Legal y Normativo");
     y = addBodyText(doc, y, "Este SGSST se fundamenta y da cumplimiento a las siguientes normativas:");
 
-    (doc as unknown as { autoTable: (opts: Record<string, unknown>) => void }).autoTable({
+    autoTable(doc, {
         startY: y,
         head: [["Normativa", "Descripción"]],
         body: [
@@ -125,7 +123,8 @@ export function generateSGSST(data: SGSSTData) {
         didDrawPage: pageHook,
     });
 
-    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 5;
 
     // §4. Planificación y Gestión de Riesgos
     y = addSectionTitle(doc, y, "4. Planificación y Gestión de Riesgos");
@@ -137,7 +136,7 @@ export function generateSGSST(data: SGSSTData) {
     // ===========================================================================
     y = addSectionTitle(doc, y, "5. Estructura y Responsabilidades");
 
-    (doc as unknown as { autoTable: (opts: Record<string, unknown>) => void }).autoTable({
+    autoTable(doc, {
         startY: y,
         head: [["Cargo / Rol", "Responsabilidades SSO"]],
         body: [
@@ -155,13 +154,14 @@ export function generateSGSST(data: SGSSTData) {
         didDrawPage: pageHook,
     });
 
-    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 5;
 
     // §6. Competencia, Formación y Toma de Conciencia
     y = addSectionTitle(doc, y, "6. Competencia, Formación y Toma de Conciencia");
     y = addBodyText(doc, y, `Todo trabajador que ingrese al proyecto ${P} en ${L} deberá contar con:`);
 
-    (doc as unknown as { autoTable: (opts: Record<string, unknown>) => void }).autoTable({
+    autoTable(doc, {
         startY: y,
         head: [["Requisito", "Descripción", "Responsable"]],
         body: [
@@ -180,7 +180,8 @@ export function generateSGSST(data: SGSSTData) {
         didDrawPage: pageHook,
     });
 
-    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 5;
 
     // §7. Comunicación
     y = addSectionTitle(doc, y, "7. Comunicación y Participación");
@@ -190,7 +191,7 @@ export function generateSGSST(data: SGSSTData) {
     y = addSectionTitle(doc, y, "8. Control Operacional");
     y = addBodyText(doc, y, "Para garantizar la seguridad en terreno, se implementarán los siguientes controles críticos:");
 
-    (doc as unknown as { autoTable: (opts: Record<string, unknown>) => void }).autoTable({
+    autoTable(doc, {
         startY: y,
         head: [["Control", "Descripción", "Frecuencia"]],
         body: [
@@ -211,13 +212,14 @@ export function generateSGSST(data: SGSSTData) {
         didDrawPage: pageHook,
     });
 
-    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 5;
 
     // §9. Preparación y Respuesta ante Emergencias
     y = addSectionTitle(doc, y, "9. Preparación y Respuesta ante Emergencias");
     y = addBodyText(doc, y, `Se mantendrá un Plan de Emergencia Local ajustado a la geografía de ${L}${R ? ", Región de " + R : ""}. En caso de accidente, se activará la derivación inmediata al centro de salud de la mutualidad en convenio más cercano.`);
 
-    (doc as unknown as { autoTable: (opts: Record<string, unknown>) => void }).autoTable({
+    autoTable(doc, {
         startY: y,
         head: [["Tipo de Emergencia", "Acción Inmediata", "Contacto"]],
         body: [
@@ -237,7 +239,8 @@ export function generateSGSST(data: SGSSTData) {
         didDrawPage: pageHook,
     });
 
-    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 5;
 
     // §10. Seguimiento
     y = addSectionTitle(doc, y, "10. Seguimiento, Medición y Auditoría");

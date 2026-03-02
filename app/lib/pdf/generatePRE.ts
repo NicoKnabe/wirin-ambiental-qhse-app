@@ -1,5 +1,5 @@
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import { PREData } from "@/app/components/forms/PREForm";
 import {
     WIRIN, PAGE_W, PAGE_H, MARGIN, CONTENT_W,
@@ -30,7 +30,7 @@ export function generatePRE(data: PREData) {
     // ===========================================================================
     y = addSectionTitle(doc, y, "1. IDENTIFICACIÓN DEL PROYECTO");
 
-    (doc as unknown as { autoTable: (opts: Record<string, unknown>) => void }).autoTable({
+    autoTable(doc, {
         startY: y,
         head: [],
         body: [
@@ -46,7 +46,8 @@ export function generatePRE(data: PREData) {
         didDrawPage: pageHook,
     });
 
-    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 5;
 
     // ===========================================================================
     // §2. OBJETIVO
@@ -192,7 +193,7 @@ export function generatePRE(data: PREData) {
             c.tiempo || "—",
         ]);
 
-    (doc as unknown as { autoTable: (opts: Record<string, unknown>) => void }).autoTable({
+    autoTable(doc, {
         startY: y,
         head: [["Nivel de Complejidad", "Nombre Centro Médico", "Dirección", "Distancia", "Tiempo Est."]],
         body: centrosBody,
@@ -208,7 +209,8 @@ export function generatePRE(data: PREData) {
         didDrawPage: pageHook,
     });
 
-    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 10;
 
     // ===========================================================================
     // SIGNATURES
