@@ -37,17 +37,33 @@ export function usePDFExport() {
             const fecha = new Date().toISOString().split("T")[0].replace(/-/g, "");
             const filename = `WirinAmbiental_${tipo.toUpperCase()}_${fecha}.pdf`;
 
-            // Opciones de html2pdf para preservar el salto de tablas (avoid-all)
+            // Opciones de html2pdf
+            // Eliminamos 'avoid-all' porque reordena los párrafos de manera destructiva.
             const opt = {
-                margin: 10, // Margen de 10mm alrededor de la hoja blanca capturada
+                margin: [15, 10] as [number, number], // Margen: 15mm arriba/abajo, 10mm lados
                 filename: filename,
                 image: { type: 'jpeg' as const, quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
+                html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 816 },
                 jsPDF: { unit: 'mm' as const, format: 'letter' as const, orientation: 'portrait' as const },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                pagebreak: { mode: ['css', 'legacy'] }
             };
 
-            await html2pdf().set(opt).from(element).save();
+            const worker = html2pdf().set(opt).from(element);
+            // Generamos el Blob en lugar de usar .save() nativo para burlar bloqueos de Chrome
+            const pdfBlob = await worker.output('blob');
+
+            if (pdfBlob) {
+                const url = window.URL.createObjectURL(pdfBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+
+                // Cleanup
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            }
 
             // Restaurar los elementos ocultos
             hiddenElements.forEach((el) => {
