@@ -3,34 +3,14 @@
 import { useRef, useState } from "react";
 
 interface SignatureUploadProps {
-    /** Label shown above the signature area */
     label?: string;
-    /** Pre-filled name (from form data) */
     name: string;
-    /** Role/cargo shown below the name */
     role: string;
-    /** Called when a signature image is selected */
     onSignatureChange?: (dataUrl: string | null) => void;
-    /** If a dataUrl is passed in, render it instead of the empty box */
     signatureDataUrl?: string | null;
-    /** Small = compact mode for diffusion tables */
     small?: boolean;
 }
 
-/**
- * SignatureUpload
- *
- * Renders a signature block that:
- * 1. Shows a dashed line + name + role when no image is loaded
- * 2. Shows the uploaded PNG/JPEG image when one is selected
- * 3. Provides a hover overlay to change/clear the image
- * 4. Works for both form-side (interactive) and preview-side (display-only)
- *
- * PDF RULES:
- * - The <input type="file"> and interactive controls are ALWAYS hidden in print
- * - If a signature image exists, it prints
- * - If no image, a blank space prints (for manual signing)
- */
 export default function SignatureUpload({
     label,
     name,
@@ -67,57 +47,42 @@ export default function SignatureUpload({
     };
 
     return (
-        <div style={{ textAlign: "center", flex: 1 }}>
+        <div style={{ textAlign: "center", flex: 1, pageBreakInside: "avoid" }}>
 
-            {/* ── PRINT-ONLY: signature image OR blank signing space ── */}
-            <div className="hidden print:!block" style={{ height: `${height}px`, borderBottom: "1px solid #000", marginBottom: "6px" }}>
+            {/* ── Signature visual area ── */}
+            <div style={{ height: `${height}px`, borderBottom: "1px solid #000", marginBottom: "6px", position: "relative" }}>
                 {hasImage && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                         src={localUrl!}
                         alt="Firma digital"
-                        style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", margin: "0 auto" }}
+                        style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", margin: "0 auto", display: "block" }}
                     />
                 )}
-                {/* If no image, the empty div acts as space for manual signing */}
-            </div>
 
-            {/* ── SCREEN-ONLY: interactive upload area ── */}
-            <div
-                className="print:!hidden"
-                onClick={() => fileRef.current?.click()}
-                onMouseEnter={() => setHovering(true)}
-                onMouseLeave={() => setHovering(false)}
-                style={{
-                    position: "relative",
-                    height: `${height}px`,
-                    border: hasImage ? "none" : "1px dashed #9e9e9e",
-                    borderRadius: "4px",
-                    marginBottom: "6px",
-                    cursor: "pointer",
-                    overflow: "hidden",
-                    background: hovering && !hasImage ? "#f0fdf4" : "transparent",
-                    transition: "background 0.15s",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                }}
-                title={hasImage ? "Haz clic para cambiar la firma" : "Haz clic para subir firma (PNG/JPEG)"}
-            >
-                {hasImage ? (
-                    <>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={localUrl!}
-                            alt="Firma digital"
-                            style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }}
-                        />
-                        {hovering && (
-                            <div style={{
-                                position: "absolute", inset: 0,
-                                background: "rgba(255,255,255,0.75)",
-                                display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                            }}>
+                {/* Interactive overlay — hide-on-print */}
+                <div
+                    className="hide-on-print"
+                    onClick={() => fileRef.current?.click()}
+                    onMouseEnter={() => setHovering(true)}
+                    onMouseLeave={() => setHovering(false)}
+                    style={{
+                        position: "absolute",
+                        inset: 0,
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: hovering ? "rgba(240,253,244,0.9)" : (hasImage ? "transparent" : "transparent"),
+                        border: hasImage ? "none" : "1px dashed #9e9e9e",
+                        borderRadius: "4px",
+                        transition: "background 0.15s",
+                    }}
+                    title={hasImage ? "Haz clic para cambiar la firma" : "Haz clic para subir firma (PNG/JPEG)"}
+                >
+                    {hasImage ? (
+                        hovering && (
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                                 <span style={{ fontSize: "10px", color: "#1B5E20", fontWeight: 700 }}>✎ Cambiar</span>
                                 <button
                                     onClick={clear}
@@ -126,26 +91,26 @@ export default function SignatureUpload({
                                     ✕ Quitar
                                 </button>
                             </div>
-                        )}
-                    </>
-                ) : (
-                    <span style={{ fontSize: small ? "8px" : "9px", color: hovering ? "#4CAF50" : "#bdbdbd", pointerEvents: "none" }}>
-                        {hovering ? "⬆ Subir firma PNG/JPG" : "✎ Firma"}
-                    </span>
-                )}
+                        )
+                    ) : (
+                        <span style={{ fontSize: small ? "8px" : "9px", color: hovering ? "#4CAF50" : "#bdbdbd", pointerEvents: "none" }}>
+                            {hovering ? "⬆ Subir firma PNG/JPG" : "✎ Firma"}
+                        </span>
+                    )}
+                </div>
             </div>
 
-            {/* Hidden file input — ALWAYS hidden, even on screen */}
+            {/* Hidden file input — also hide-on-print as a safety net */}
             <input
                 ref={fileRef}
                 type="file"
                 accept="image/png,image/jpeg,image/jpg"
-                className="print:!hidden"
+                className="hide-on-print"
                 style={{ display: "none" }}
                 onChange={handleFile}
             />
 
-            {/* Name + Role — always visible in both screen and print */}
+            {/* Name + Role — always visible */}
             {label && (
                 <p style={{
                     fontSize: small ? "6.5pt" : "7pt",

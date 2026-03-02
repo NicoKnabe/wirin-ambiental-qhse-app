@@ -155,7 +155,7 @@ export default function PREPreview({ data }: Props) {
                 </div>
 
                 {/* ===== PROTOCOLOS DE TERRENO ===== */}
-                <div style={{ pageBreakBefore: 'always', clear: 'both' }} className="!hidden print:!block"></div>
+                <div className="page-break"></div>
                 <div style={{ marginBottom: "15px" }}>
                     <div style={{ border: "1px solid #000", padding: "4px 8px", backgroundColor: "#1B5E20", color: "white", fontWeight: "bold", fontSize: "9pt", borderBottom: "none" }}>
                         4. PROTOCOLOS ESPECÍFICOS DE TERRENO
@@ -197,7 +197,7 @@ export default function PREPreview({ data }: Props) {
                 </div>
 
                 {/* ===== MATRIZ DE EVACUACIÓN (TABLA DINÁMICA) ===== */}
-                <div style={{ pageBreakBefore: 'always', clear: 'both' }} className="!hidden print:!block"></div>
+                <div className="page-break"></div>
                 <div style={{ marginBottom: "15px", pageBreakInside: "avoid" }}>
                     <div style={{ border: "1px solid #000", padding: "4px 8px", backgroundColor: "#1B5E20", color: "white", fontWeight: "bold", fontSize: "9pt", borderBottom: "none" }}>
                         5. MATRIZ DE EVACUACIÓN Y CENTROS ASISTENCIALES

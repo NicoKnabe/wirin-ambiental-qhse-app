@@ -300,9 +300,17 @@ body {
     break-inside: avoid !important;
   }
 
-  /* Oculta la UI en el PDF — método infalible */
-  .no-print,
-  .esconder-al-imprimir {
+  /* Oculta CUALQUIER elemento de UI en el PDF */
+  .hide-on-print {
     display: none !important;
+  }
+
+  /* Saltos de página forzados */
+  .page-break {
+    page-break-before: always !important;
+    display: block !important;
+    height: 0;
+    margin: 0;
+    padding: 0;
   }
 }
