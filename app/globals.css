@@ -289,20 +289,44 @@ body {
     print-color-adjust: exact;
   }
 
-  /* Protege tablas y firmas sin destruir flexbox interno */
-  table,
-  tr,
-  td,
-  th,
+  /* Ocultar elementos interactivos estrictamente */
+  button,
+  input[type="file"],
+  .hide-on-print {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Estructura de tablas anti-cortes */
+  table {
+    page-break-inside: auto !important;
+    border-collapse: collapse !important;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: auto !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tfoot {
+    display: table-footer-group !important;
+  }
+
+  /* Protege firmas y bloques especiales */
   .firma-box,
   .evitar-corte {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-  }
-
-  /* Oculta CUALQUIER elemento de UI en el PDF */
-  .hide-on-print {
-    display: none !important;
   }
 
   /* Saltos de página forzados */

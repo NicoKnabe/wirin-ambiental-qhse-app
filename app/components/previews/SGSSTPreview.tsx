@@ -27,7 +27,6 @@ function DocFooter({ code, version, date, page, total }: { code: string; version
         <div className="pdf-footer">
             <span>Wirin Ambiental</span>
             <span>{code} | v{version} | {date}</span>
-            <span>Pág. {page} de {total}</span>
         </div>
     );
 }

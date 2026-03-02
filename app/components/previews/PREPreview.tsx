@@ -50,7 +50,6 @@ export default function PREPreview({ data }: Props) {
                                         <tr><td style={{ borderBottom: "1px solid #000", padding: "4px 8px" }}><strong>CÓDIGO:</strong> {CODE}</td></tr>
                                         <tr><td style={{ borderBottom: "1px solid #000", padding: "4px 8px" }}><strong>VERSIÓN:</strong> {VERSION}</td></tr>
                                         <tr><td style={{ borderBottom: "1px solid #000", padding: "4px 8px" }}><strong>FECHA:</strong> {formattedDate}</td></tr>
-                                        <tr><td style={{ padding: "4px 8px" }}><strong>PÁGINA:</strong> 1 de X</td></tr>
                                     </tbody>
                                 </table>
                             </td>

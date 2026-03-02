@@ -50,7 +50,6 @@ export default function ComChecklistPreview({ data }: Props) {
                                         <tr><td style={{ borderBottom: "1px solid #000", padding: "4px 8px" }}><strong>CÓDIGO:</strong> {CODE}</td></tr>
                                         <tr><td style={{ borderBottom: "1px solid #000", padding: "4px 8px" }}><strong>VERSIÓN:</strong> {VERSION}</td></tr>
                                         <tr><td style={{ borderBottom: "1px solid #000", padding: "4px 8px" }}><strong>FECHA:</strong> {formattedDate}</td></tr>
-                                        <tr><td style={{ padding: "4px 8px" }}><strong>PÁGINA:</strong> 1 de 1</td></tr>
                                     </tbody>
                                 </table>
                             </td>
@@ -156,7 +155,7 @@ export default function ComChecklistPreview({ data }: Props) {
                     borderTop: "1px solid #ccc",
                     paddingTop: "5px"
                 }}>
-                    Wirin Ambiental - Checklist Comunicación Zonas Remotas - Pág. 1 de 1
+                    Wirin Ambiental - Checklist Comunicación Zonas Remotas
                 </div>
 
             </div>
