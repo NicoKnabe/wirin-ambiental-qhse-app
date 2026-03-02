@@ -276,65 +276,37 @@ body {
 
 
 /* ============================================
-   PRINT / PDF ENGINE (react-to-print + native browser)
+   WYSIWYG PDF EXPORTING STYLES (html2pdf.js)
    ============================================ */
-@media print {
-  @page {
-    size: letter;
-    margin: 15mm 15mm;
-  }
+.exporting-pdf .hide-on-export,
+.exporting-pdf button,
+.exporting-pdf input[type="file"] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
 
-  body {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
+.exporting-pdf input[type="text"],
+.exporting-pdf textarea {
+  border: none !important;
+  background: transparent !important;
+  color: inherit !important;
+  resize: none !important;
+  outline: none !important;
+}
 
-  /* Ocultar elementos interactivos estrictamente */
-  button,
-  input[type="file"],
-  .hide-on-print {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    height: 0 !important;
-    width: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
+.exporting-pdf input::placeholder,
+.exporting-pdf textarea::placeholder {
+  color: transparent !important;
+}
 
-  /* Estructura de tablas anti-cortes */
-  table {
-    page-break-inside: auto !important;
-    border-collapse: collapse !important;
-  }
-
-  tr {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-    page-break-after: auto !important;
-  }
-
-  thead {
-    display: table-header-group !important;
-  }
-
-  tfoot {
-    display: table-footer-group !important;
-  }
-
-  /* Protege firmas y bloques especiales */
-  .firma-box,
-  .evitar-corte {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Saltos de página forzados */
-  .page-break {
-    page-break-before: always !important;
-    display: block !important;
-    height: 0;
-    margin: 0;
-    padding: 0;
-  }
+/* Mantiene juntas áreas clave */
+.firma-box,
+.evitar-corte {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
 }

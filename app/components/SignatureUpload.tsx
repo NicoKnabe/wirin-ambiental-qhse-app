@@ -60,9 +60,9 @@ export default function SignatureUpload({
                     />
                 )}
 
-                {/* Interactive overlay — hide-on-print */}
+                {/* Interactive overlay — hide-on-export */}
                 <div
-                    className="hide-on-print"
+                    className="hide-on-export"
                     onClick={() => fileRef.current?.click()}
                     onMouseEnter={() => setHovering(true)}
                     onMouseLeave={() => setHovering(false)}
@@ -100,12 +100,12 @@ export default function SignatureUpload({
                 </div>
             </div>
 
-            {/* Hidden file input — also hide-on-print as a safety net */}
+            {/* Hidden file input — also hide-on-export as a safety net */}
             <input
                 ref={fileRef}
                 type="file"
                 accept="image/png,image/jpeg,image/jpg"
-                className="hide-on-print"
+                className="hide-on-export"
                 style={{ display: "none" }}
                 onChange={handleFile}
             />
