@@ -1,65 +1,359 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useRef } from "react";
+import { useReactToPrint } from "react-to-print";
+import dynamic from "next/dynamic";
+import WirinLogo from "./components/WirinLogo";
+import SGSSTForm, { SGSSTData } from "./components/forms/SGSSTForm";
+import PTSForm, { PTSData } from "./components/forms/PTSForm";
+import EPPForm, { EPPData } from "./components/forms/EPPForm";
+import PPRForm, { PPRData } from "./components/forms/PPRForm";
+import ASTForm, { ASTData } from "./components/forms/ASTForm";
+import VehiculoForm, { VehiculoData } from "./components/forms/VehiculoForm";
+import CharlaForm, { CharlaData } from "./components/forms/CharlaForm";
+import ComChecklistForm, { ComChecklistData } from "./components/forms/ComChecklistForm";
+import ODIForm, { ODIData } from "./components/forms/ODIForm";
+import PREForm, { PREData } from "./components/forms/PREForm";
+
+// Lazy load previews (they are heavy)
+const SGSSTPreview = dynamic(() => import("./components/previews/SGSSTPreview"), { ssr: false });
+const PTSPreview = dynamic(() => import("./components/previews/PTSPreview"), { ssr: false });
+const EPPPreview = dynamic(() => import("./components/previews/EPPPreview"), { ssr: false });
+const PPRPreview = dynamic(() => import("./components/previews/PPRPreview"), { ssr: false });
+const ASTPreview = dynamic(() => import("./components/previews/ASTPreview"), { ssr: false });
+const VehiculoPreview = dynamic(() => import("./components/previews/VehiculoPreview"), { ssr: false });
+const CharlaPreview = dynamic(() => import("./components/previews/CharlaPreview"), { ssr: false });
+const ComChecklistPreview = dynamic(() => import("./components/previews/ComChecklistPreview"), { ssr: false });
+const ODIPreview = dynamic(() => import("./components/previews/ODIPreview"), { ssr: false });
+const PREPreview = dynamic(() => import("./components/previews/PREPreview"), { ssr: false });
+
+type Template = "sgsst" | "pts" | "epp" | "ppr" | "ast" | "vehiculo" | "charla" | "comunicacion" | "odi" | "pre";
+
+const templates = [
+  { id: "sgsst" as Template, label: "SGSST", icon: "📋", desc: "Manual SGSST", color: "#2E7D32" },
+  { id: "pts" as Template, label: "PTS", icon: "🌿", desc: "Flora y Fauna", color: "#1B5E20" },
+  { id: "epp" as Template, label: "EPP", icon: "🦺", desc: "Entrega EPP", color: "#F57F17" },
+  { id: "ppr" as Template, label: "PPR", icon: "📊", desc: "Prog. Prevención", color: "#4CAF50" },
+  { id: "ast" as Template, label: "AST", icon: "⚠️", desc: "Análisis Tarea", color: "#b91c1c" },
+  { id: "vehiculo" as Template, label: "Vehículo", icon: "🚙", desc: "Checklist 4x4", color: "#1976D2" },
+  { id: "charla" as Template, label: "Charla 5'", icon: "🗣️", desc: "Charla Diaria", color: "#F57C00" },
+  { id: "comunicacion" as Template, label: "Comunicaciones", icon: "📡", desc: "Zonas Remotas", color: "#607D8B" },
+  { id: "odi" as Template, label: "ODI", icon: "📝", desc: "Derecho a Saber", color: "#795548" },
+  { id: "pre" as Template, label: "PRE & MEDEVAC", icon: "🚑", desc: "Plan Emergencias", color: "#e11d48" },
+];
+
+const today = new Date().toISOString().split("T")[0];
+
+const defaultSGSST: SGSSTData = {
+  projectName: "LAT Los Vilos - Las Palmas 220 kV",
+  client: "Transelec",
+  location: "Sector Los Vilos",
+  region: "Coquimbo",
+  startDate: today,
+  endDate: "",
+  projectManager: "",
+  projectManagerRut: "",
+  ssoAdvisor: "",
+  ssoAdvisorRut: "",
+  companyRut: "",
+  version: "1.0",
+};
+
+const defaultPTS: PTSData = {
+  ...defaultSGSST,
+  elaboratedBy: "", elaboratedByRole: "Asesor SSO", elaboratedDate: today,
+  reviewedBy: "", reviewedByRole: "Jefe de Proyecto", reviewedDate: today,
+  approvedBy: "", approvedByRole: "Gerencia Wirin Ambiental", approvedDate: today,
+};
+
+const defaultEPP: EPPData = {
+  projectName: "LAT Los Vilos - Las Palmas 220 kV",
+  client: "Transelec",
+  workerName: "",
+  workerRut: "",
+  responsible: "",
+  projectManager: "",
+  date: today,
+};
+
+const defaultPPR: PPRData = {
+  projectName: "LAT Los Vilos - Las Palmas 220 kV",
+  client: "Transelec",
+  year: "2026",
+  month: "Marzo",
+  cotizacion: "0",
+  elaboratedBy: "", elaboratedRole: "Experto en Prevención de Riesgos",
+  reviewedBy: "", reviewedRole: "Jefe de Proyecto",
+  approvedBy: "", approvedRole: "Gerencia Wirin Ambiental",
+};
+
+const defaultAST: ASTData = {
+  projectName: "LAT Los Vilos - Las Palmas 220 kV",
+  location: "Sector Los Vilos",
+  date: today,
+  startTime: "08:00",
+  endTime: "18:00",
+  client: "Transelec",
+  task: "",
+  steps: [{ id: "1", sequence: "", hazards: "", controls: "" }],
+  ppe: { "Casco": true, "Lentes UV": true, "Zapatos de Seguridad": true, "Chaleco Reflectante": true, "Bloqueador Solar": true },
+  workers: [],
+  supervisorName: "",
+  ssoName: "",
+};
+
+const defaultVehiculo: VehiculoData = {
+  fecha: today,
+  hora: "08:00",
+  patente: "",
+  kilometraje: "",
+  conductor: "",
+  proyecto: "LAT Los Vilos - Las Palmas 220 kV",
+  mandante: "Transelec",
+  items: {},
+  observaciones: "",
+};
+
+const defaultCharla: CharlaData = {
+  fecha: today,
+  proyecto: "LAT Los Vilos - Las Palmas 220 kV",
+  supervisor: "",
+  tema: "",
+  trabajadores: [],
+};
+
+const defaultComChecklist: ComChecklistData = {
+  fecha: today,
+  cuadrilla: "",
+  destino: "",
+  horaSalida: "08:00",
+  jefeCuadrilla: "",
+  equipos: {},
+};
+
+const defaultODI: ODIData = {
+  fecha: today,
+  nombres: "",
+  rut: "",
+  cargo: "Especialista en Medio Biótico",
+  proyecto: "LAT Los Vilos - Las Palmas 220 kV",
+  empresa: "Wirin Ambiental",
+};
+
+const defaultPRE: PREData = {
+  proyecto: "LAT Los Vilos - Las Palmas 220 kV",
+  mandante: "Transelec",
+  fecha: today,
+  ubicacion: "Sector Los Vilos, coordenadas Lat X, Lon Y",
+  jefeCuadrilla: "",
+  fonoJefe: "",
+  asesorSso: "",
+  fonoSso: "",
+  centros: [
+    { id: "1", tipo: "Hospital Base (Alta Complejidad)", nombre: "Hospital San Pedro de Los Vilos", direccion: "Calle Hospital 123", distancia: "15 km", tiempo: "20 min" },
+    { id: "2", tipo: "Posta de Salud Rural", nombre: "Posta Rural Caimanes", direccion: "Camino Principal S/N", distancia: "5 km", tiempo: "10 min" }
+  ]
+};
+
+export default function HomePage() {
+  const [activeTemplate, setActiveTemplate] = useState<Template>("sgsst");
+  const [sgsst, setSgsst] = useState<SGSSTData>(defaultSGSST);
+  const [pts, setPts] = useState<PTSData>(defaultPTS);
+  const [epp, setEpp] = useState<EPPData>(defaultEPP);
+  const [ppr, setPpr] = useState<PPRData>(defaultPPR);
+  const [ast, setAst] = useState<ASTData>(defaultAST);
+  const [vehiculo, setVehiculo] = useState<VehiculoData>(defaultVehiculo);
+  const [charla, setCharla] = useState<CharlaData>(defaultCharla);
+  const [comunicacion, setComunicacion] = useState<ComChecklistData>(defaultComChecklist);
+  const [odi, setOdi] = useState<ODIData>(defaultODI);
+  const [pre, setPre] = useState<PREData>(defaultPRE);
+
+  // ── react-to-print: native browser print engine ──────────────────────────
+  const printRef = useRef<HTMLDivElement>(null);
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: `Wirin_Ambiental_${templates.find(t => t.id === activeTemplate)?.label ?? 'Documento'}`,
+  });
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#f0f4f0", overflow: "hidden" }}>
+
+      {/* ===== TOP NAVBAR ===== */}
+      <header style={{
+        background: "linear-gradient(135deg, #1B5E20 0%, #2E7D32 60%, #4CAF50 100%)",
+        padding: "0 24px",
+        display: "flex",
+        alignItems: "center",
+        gap: "16px",
+        height: "64px",
+        boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+        flexShrink: 0,
+        zIndex: 50,
+      }}>
+        <img src="/logo.png" alt="Logo Wirin Ambiental" style={{ height: "40px", width: "auto", objectFit: "contain" }} />
+        <div>
+          <div style={{ fontFamily: "'Roboto Condensed', sans-serif", fontWeight: 700, fontSize: "18px", color: "#A5D6A7", lineHeight: 1.1 }}>
+            wirin <span style={{ fontSize: "12px", letterSpacing: "0.2em", color: "#C8E6C9" }}>AMBIENTAL</span>
+          </div>
+          <div style={{ fontSize: "11px", color: "#C8E6C9", letterSpacing: "0.05em" }}>
+            Gestión QHSE
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div style={{ flex: 1 }} />
+
+
+      </header>
+
+      {/* ===== BODY: split screen ===== */}
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+
+        {/* ============ LEFT PANEL: Form (no-print) ============ */}
+        <div className="no-print" style={{
+          width: "380px",
+          minWidth: "340px",
+          background: "white",
+          display: "flex",
+          flexDirection: "column",
+          borderRight: "1px solid #e5e7eb",
+          boxShadow: "4px 0 12px rgba(0,0,0,0.06)",
+          zIndex: 10,
+          transition: "width 0.3s ease",
+        }}>
+          {/* Template Tabs */}
+          <div style={{ padding: "12px 16px 0", background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr", gap: "6px", marginBottom: "0" }}>
+              {templates.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveTemplate(t.id)}
+                  style={{
+                    padding: "8px 4px",
+                    borderRadius: "8px 8px 0 0",
+                    border: "none",
+                    cursor: "pointer",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "2px",
+                    background: activeTemplate === t.id ? "white" : "transparent",
+                    borderBottom: activeTemplate === t.id ? `3px solid ${t.color}` : "3px solid transparent",
+                    boxShadow: activeTemplate === t.id ? "0 -2px 8px rgba(0,0,0,0.08)" : "none",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  <span style={{ fontSize: "18px" }}>{t.icon}</span>
+                  <span style={{ fontSize: "11px", fontWeight: 700, color: activeTemplate === t.id ? t.color : "#6b7280", letterSpacing: "0.05em" }}>
+                    {t.label}
+                  </span>
+                  <span style={{ fontSize: "9px", color: "#9ca3af", lineHeight: 1 }}>{t.desc}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Form Content */}
+          <div style={{ flex: 1, overflowY: "auto", padding: "20px 16px" }}>
+            {activeTemplate === "sgsst" && <SGSSTForm data={sgsst} onChange={setSgsst} />}
+            {activeTemplate === "pts" && <PTSForm data={pts} onChange={setPts} />}
+            {activeTemplate === "epp" && <EPPForm data={epp} onChange={setEpp} />}
+            {activeTemplate === "ppr" && <PPRForm data={ppr} onChange={setPpr} />}
+            {activeTemplate === "ast" && <ASTForm data={ast} onChange={setAst} />}
+            {activeTemplate === "vehiculo" && <VehiculoForm data={vehiculo} onChange={setVehiculo} />}
+            {activeTemplate === "charla" && <CharlaForm data={charla} onChange={setCharla} />}
+            {activeTemplate === "comunicacion" && <ComChecklistForm data={comunicacion} onChange={setComunicacion} />}
+            {activeTemplate === "odi" && <ODIForm data={odi} onChange={setOdi} />}
+            {activeTemplate === "pre" && <PREForm data={pre} onChange={setPre} />}
+          </div>
+
+          {/* Bottom action area */}
+          <div style={{ borderTop: "1px solid #e5e7eb", background: "#f9fafb", flexShrink: 0 }}>
+            {/* PDF Export */}
+            <div style={{ padding: "14px 16px 12px" }}>
+              <button
+                className="btn-export"
+                onClick={() => handlePrint()}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" /></svg>
+                Exportar PDF Oficial
+              </button>
+              <div style={{ marginTop: "8px", textAlign: "center" }}>
+                <span style={{ fontSize: "10px", color: "#9ca3af" }}>
+                  {templates.find(t => t.id === activeTemplate)?.icon}&nbsp;
+                  {templates.find(t => t.id === activeTemplate)?.label}&nbsp;·&nbsp;Carta (Letter)
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
+
+        {/* ============ RIGHT PANEL: Preview (this is what gets printed) ============ */}
+        <div
+          ref={printRef}
+          className="print-block"
+          style={{
+            flex: 1,
+            overflowY: "auto",
+            background: "#e8eee8",
+            padding: "24px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          {/* Preview Header Bar — hidden on print */}
+          <div className="no-print" style={{
+            width: "816px",
+            maxWidth: "100%",
+            background: "white",
+            borderRadius: "8px 8px 0 0",
+            padding: "10px 16px",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+            marginBottom: "0",
+            borderBottom: "2px solid #4CAF50",
+          }}>
+            <div style={{ display: "flex", gap: "6px" }}>
+              {["#ff5f57", "#ffbd3e", "#29c840"].map((c) => (
+                <div key={c} style={{ width: "12px", height: "12px", borderRadius: "50%", background: c }} />
+              ))}
+            </div>
+            <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "12px", color: "#6b7280", letterSpacing: "0.05em" }}>
+                👁 VISTA PREVIA EN TIEMPO REAL
+              </span>
+              <span style={{
+                background: "#e8f5e9",
+                color: "#1B5E20",
+                fontSize: "10px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "10px",
+                border: "1px solid #c8e6c9",
+              }}>
+                {templates.find(t => t.id === activeTemplate)?.label} — PDF Carta
+              </span>
+            </div>
+            <div style={{ fontSize: "10px", color: "#9ca3af" }}>816 × 1056 px</div>
+          </div>
+
+          {/* Document Preview */}
+          <div className="print-block" style={{ width: "816px", maxWidth: "100%" }}>
+            {activeTemplate === "sgsst" && <SGSSTPreview data={sgsst} />}
+            {activeTemplate === "pts" && <PTSPreview data={pts} />}
+            {activeTemplate === "epp" && <EPPPreview data={epp} />}
+            {activeTemplate === "ppr" && <PPRPreview data={ppr} />}
+            {activeTemplate === "ast" && <ASTPreview data={ast} />}
+            {activeTemplate === "vehiculo" && <VehiculoPreview data={vehiculo} />}
+            {activeTemplate === "charla" && <CharlaPreview data={charla} />}
+            {activeTemplate === "comunicacion" && <ComChecklistPreview data={comunicacion} />}
+            {activeTemplate === "odi" && <ODIPreview data={odi} />}
+            {activeTemplate === "pre" && <PREPreview data={pre} />}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
