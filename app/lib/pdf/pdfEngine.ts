@@ -15,10 +15,10 @@ import autoTable from "jspdf-autotable";
 // PALETA CORPORATIVA WIRIN AMBIENTAL
 // ─────────────────────────────────────────────
 const C = {
-    greenDark: [27, 94, 32] as [number, number, number],
-    greenMid: [46, 125, 50] as [number, number, number],
-    greenLight: [76, 175, 80] as [number, number, number],
-    greenPale: [232, 245, 233] as [number, number, number],
+    greenDark: [34, 102, 59] as [number, number, number],   // Verde oscuro corporativo
+    greenMid: [76, 150, 70] as [number, number, number],    // Verde medio
+    greenLight: [139, 195, 74] as [number, number, number], // Verde lima vibrante (Logo Wirin)
+    greenPale: [241, 248, 233] as [number, number, number], // Fondo tablas muy suave
     orange: [230, 81, 0] as [number, number, number],
     amber: [245, 124, 0] as [number, number, number],
     olive: [104, 159, 56] as [number, number, number],
@@ -84,24 +84,16 @@ function drawHeader(doc: jsPDF, meta: HeaderMeta): number {
     doc.rect(0, 0, pw, 4, "F");
 
     // Logo
-    if (LOGO_BASE64) {
-        try {
-            doc.addImage(LOGO_BASE64, "PNG", 14, 6, 20, 20);
-        } catch {
-            drawLogoFallback(doc);
-        }
+    if (typeof LOGO_BASE64 !== 'undefined' && LOGO_BASE64) {
+        doc.addImage(LOGO_BASE64, 'PNG', 14, 8, 28, 12); // Ajustado a la proporción del logo de Wirin
     } else {
-        drawLogoFallback(doc);
+        // Fallback LIMPIO si no hay imagen (no duplicar "wirin")
+        doc.setTextColor(...C.greenLight);
+        doc.setFontSize(14); doc.setFont('helvetica', 'bold');
+        doc.text('wirin', 14, 16);
+        doc.setTextColor(...C.greenDark);
+        doc.setFontSize(6); doc.text('AMBIENTAL', 14, 20);
     }
-
-    doc.setTextColor(...C.greenDark);
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "bold");
-    doc.text("wirin", 35, 15);
-    doc.setFontSize(5.5);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...C.greenLight);
-    doc.text("AMBIENTAL", 35, 20);
 
     // Título centrado
     const titleLines = doc.splitTextToSize(meta.title.toUpperCase(), 100);
@@ -724,54 +716,347 @@ export function generarPTS(datos: any): jsPDF {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// GENERIC MODULE GENERATOR (placeholder for unimplemented modules)
+// GENERADOR EPP
 // ─────────────────────────────────────────────────────────────────
-
-const LABELS: Record<string, { title: string; code: string }> = {
-    epp: { title: "REGISTRO DE ENTREGA DE EPP", code: "WA-EPP-001" },
-    ppr: { title: "PLAN DE PREVENCIÓN DE RIESGOS (PPR)", code: "WA-PPR-001" },
-    ast: { title: "ANÁLISIS SEGURO DE TRABAJO (AST)", code: "WA-AST-001" },
-    vehiculo: { title: "CHECKLIST DE INSPECCIÓN VEHICULAR", code: "WA-VEH-001" },
-    charla: { title: "REGISTRO DE CHARLA DE SEGURIDAD", code: "WA-CHA-001" },
-    comunicacion: { title: "CHECKLIST DE COMUNICACIONES", code: "WA-COM-001" },
-    odi: { title: "OBLIGACIÓN DE INFORMAR (ODI/DAS)", code: "WA-ODI-001" },
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function generarGenerico(tipo: string, datos: any): jsPDF {
+export function generarEPP(datos: any): jsPDF {
     const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "letter" });
-    const info = LABELS[tipo] || { title: tipo.toUpperCase(), code: `WA-${tipo.toUpperCase()}-001` };
-    const fi = fmtDate(datos.startDate || datos.fecha || "");
-    const proyecto = datos.projectName || datos.proyecto || "[Proyecto]";
-    const version = datos.version || "01";
-
-    const headerMeta = { title: info.title, code: info.code, version, fecha: fi };
-    const footerMeta = { empresa: "Wirin Ambiental", codeVer: `${info.code} | v${version} | ${fi}` };
+    const fi = fmtDate(datos.fecha || datos.startDate || "");
+    const proyecto = datos.proyecto || datos.projectName || "[Proyecto]";
+    const headerMeta = { title: "REGISTRO DE ENTREGA DE EPP", code: "WA-EPP-001", version: "01", fecha: fi };
+    const footerMeta = { empresa: "Wirin Ambiental", codeVer: `WA-EPP-001 | v01 | ${fi}` };
 
     let y = drawHeader(doc, { ...headerMeta, pagina: "1 de 1" });
+    y = drawCoverBox(doc, { badge: "REGISTRO OFICIAL", title: "Entrega de Elementos de Protección Personal", subtitle: `Proyecto: ${proyecto}` }, y);
+    y = drawInfoTable(doc, [
+        ["Nombre Trabajador", datos.workerName || datos.trabajador || "—"],
+        ["RUT", datos.workerRut || datos.rut || "—"],
+        ["Cargo", datos.workerRole || datos.cargo || "—"],
+        ["Fecha de Entrega", fi],
+    ], y);
 
-    y = drawCoverBox(doc, {
-        badge: "DOCUMENTO WIRIN AMBIENTAL",
-        title: info.title,
-        subtitle: `Proyecto: ${proyecto}`,
-    }, y);
+    y = drawSection(doc, "DETALLE DE EPP ENTREGADOS", y);
+    const items = [
+        ["Casco de Seguridad", "Certificación ANSI Z89.1", fi, ""],
+        ["Lentes de Seguridad", "Filtro UV, Cert. ANSI Z87.1", fi, ""],
+        ["Zapatos de Seguridad", "Antideslizante, Cert. ISO 20345", fi, ""],
+        ["Guantes de Terreno", "Cabritilla / Nitrilo", fi, ""],
+        ["Chaleco Reflectante", "Clase 2, Alta Visibilidad", fi, ""],
+        ["Legión / Gorro", "Filtro UV UPF 50+", fi, ""],
+        ["Bloqueador Solar", "FPS 50+, Resistencia al sudor", fi, ""],
+        ["Tapones Auditivos", "NRR 25dB, Moldeables", fi, ""],
+    ];
+
+    autoTable(doc, {
+        startY: y, margin: { left: 14, right: 14 },
+        head: [["Ítem", "Descripción / Certificación", "Fecha Entrega", "Firma Trabajador"]],
+        body: items,
+        headStyles: { fillColor: C.greenMid, textColor: C.white, fontStyle: "bold", fontSize: 8 },
+        styles: { fontSize: 8, cellPadding: 3, lineColor: [210, 210, 210], lineWidth: 0.2, minCellHeight: 10 },
+        columnStyles: { 0: { fontStyle: "bold", cellWidth: 40 }, 1: { cellWidth: 55 }, 2: { cellWidth: 30 } },
+        theme: "grid",
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 4;
+
+    y = drawParagraph(doc, "Declaro recibir los Elementos de Protección Personal detallados y me comprometo a utilizarlos correctamente, mantenerlos en buen estado y solicitar su reposición cuando corresponda (Art. 53 DS 594).", y, 7.5);
+
+    drawApprovalBox(doc, { elaboro: { nombre: datos.ssoAdvisor || "[Asesor SSO]" }, reviso: { nombre: datos.projectManager || "[Jefe Proyecto]" } }, y + 6);
+    drawFooter(doc, { ...footerMeta, pagLabel: "Pág. 1 de 1" });
+    return doc;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// GENERADOR ODI (Obligación de Informar)
+// ─────────────────────────────────────────────────────────────────
+export function generarODI(datos: any): jsPDF {
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "letter" });
+    const fi = fmtDate(datos.fecha || datos.startDate || "");
+    const proyecto = datos.proyecto || datos.projectName || "[Proyecto]";
+    const headerMeta = { title: "OBLIGACIÓN DE INFORMAR (ODI/DAS)", code: "WA-ODI-001", version: "01", fecha: fi };
+    const footerMeta = { empresa: "Wirin Ambiental", codeVer: `WA-ODI-001 | v01 | ${fi}` };
+
+    let y = drawHeader(doc, { ...headerMeta, pagina: "1 de 1" });
+    y = drawCoverBox(doc, { badge: "DERECHO A SABER", title: "Inducción de Obligación de Informar", subtitle: `Proyecto: ${proyecto}` }, y);
+
+    y = drawParagraph(doc, "En cumplimiento a lo establecido en el Artículo 21 del Decreto Supremo N°40 (Derecho a Saber), se informa al trabajador sobre los riesgos inherentes a sus labores, las medidas preventivas y los métodos de trabajo correctos.", y, 8);
+
+    y = drawInfoTable(doc, [
+        ["Nombre Trabajador", datos.workerName || datos.trabajador || "—"],
+        ["RUT", datos.workerRut || datos.rut || "—"],
+        ["Cargo", datos.workerRole || datos.cargo || "—"],
+    ], y);
+
+    y = drawSection(doc, "MATRIZ DE RIESGOS INHERENTES Y CONTROLES", y);
+    const riesgos = [
+        ["Caída a distinto o mismo nivel", "Esguince, fractura, contusión", "Uso de calzado adecuado, caminar con precaución, mantener áreas limpias."],
+        ["Exposición a Radiación UV", "Quemaduras solares, insolación", "Uso de bloqueador FPS 50+, legionario, ropa manga larga, hidratación."],
+        ["Conducción en terreno rural", "Volcamiento, colisión", "Respetar límite de velocidad, uso de cinturón 4x4, manejo defensivo."],
+        ["Contacto con flora/fauna", "Mordeduras, alergias, picaduras", "No manipular sin protección, uso de guantes, aplicar repelente."],
+        ["Manejo manual de carga", "Lumbago, fatiga muscular", "Levantar máximo 25kg (hombres) / 20kg (mujeres), flexionar piernas."],
+    ];
+
+    autoTable(doc, {
+        startY: y, margin: { left: 14, right: 14 },
+        head: [["Peligro / Riesgo Inherente", "Consecuencia", "Medida de Control / PTS Aplicable"]],
+        body: riesgos,
+        headStyles: { fillColor: C.greenMid, textColor: C.white, fontStyle: "bold", fontSize: 8 },
+        styles: { fontSize: 8, cellPadding: 3, lineColor: [210, 210, 210], lineWidth: 0.2 },
+        columnStyles: { 0: { fillColor: C.greenPale, textColor: C.greenMid, fontStyle: "bold", cellWidth: 50 }, 1: { cellWidth: 40 } },
+        theme: "grid",
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 4;
+
+    y = drawParagraph(doc, "Mediante mi firma, declaro haber sido debidamente instruido respecto a los riesgos de mi labor y comprendo las medidas de control establecidas.", y, 7.5);
+
+    drawApprovalBox(doc, { elaboro: { nombre: datos.workerName || "[Firma Trabajador]", cargo: datos.workerRole || "[Cargo Trabajador]" }, reviso: { nombre: datos.ssoAdvisor || "[Asesor SSO]" } }, y + 4);
+    drawFooter(doc, { ...footerMeta, pagLabel: "Pág. 1 de 1" });
+    return doc;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// GENERADOR AST (Análisis Seguro de Trabajo)
+// ─────────────────────────────────────────────────────────────────
+export function generarAST(datos: any): jsPDF {
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "letter" });
+    const fi = fmtDate(datos.fecha || datos.startDate || "");
+    const proyecto = datos.proyecto || datos.projectName || "[Proyecto]";
+    const headerMeta = { title: "ANÁLISIS SEGURO DE TRABAJO (AST)", code: "WA-AST-001", version: "01", fecha: fi };
+    const footerMeta = { empresa: "Wirin Ambiental", codeVer: `WA-AST-001 | v01 | ${fi}` };
+
+    let y = drawHeader(doc, { ...headerMeta, pagina: "1 de 1" });
+    y = drawCoverBox(doc, { badge: "PLANIFICACIÓN DE TERRENO", title: "Análisis Seguro de Trabajo Diario", subtitle: `Actividad: ${datos.task || "[Tarea a realizar]"}` }, y);
 
     y = drawInfoTable(doc, [
         ["Proyecto", proyecto],
-        ["Mandante", datos.client || datos.mandante || "—"],
-        ["Ubicación", datos.location || datos.ubicacion || "—"],
-        ["Fecha", fi],
-        ["Versión", version],
+        ["Ubicación / Sector", datos.location || datos.ubicacion || "—"],
+        ["Supervisor", datos.supervisor || datos.projectManager || "—"],
+        ["Fecha de Ejecución", fi],
     ], y);
 
-    y = drawSection(doc, "CONTENIDO DEL DOCUMENTO", y);
-    y = drawParagraph(doc,
-        `Este módulo "${info.title}" se encuentra en proceso de maquetación detallada. ` +
-        `Los datos ingresados en el formulario se integrarán en una próxima actualización. ` +
-        `Contacte a Wirin Ambiental para más información.`, y);
+    y = drawSection(doc, "ANÁLISIS DE LA TAREA", y);
+    const pasos = [
+        ["1. Traslado al área de trabajo", "Choque, colisión, volcamiento", "Revisión pre-viaje, respeto a normas de tránsito, manejo defensivo."],
+        ["2. Preparación de equipos", "Sobreesfuerzo, cortes menores", "Postura correcta, uso de guantes de cabritilla."],
+        ["3. Ejecución de terreno", "Caídas al mismo nivel, exposición UV", "Caminar por senderos habilitados, uso de bloqueador solar, hidratación."],
+        ["4. Retiro y limpieza", "Manejo de residuos", "No dejar basura en el entorno, acopio según norma local."],
+    ];
+
+    autoTable(doc, {
+        startY: y, margin: { left: 14, right: 14 },
+        head: [["Paso a Paso de la Tarea", "Riesgos Identificados", "Controles a Implementar"]],
+        body: pasos,
+        headStyles: { fillColor: C.greenMid, textColor: C.white, fontStyle: "bold", fontSize: 8 },
+        styles: { fontSize: 8, cellPadding: 3, lineColor: [210, 210, 210], lineWidth: 0.2 },
+        columnStyles: { 0: { fontStyle: "bold", cellWidth: 50 }, 1: { cellWidth: 45, textColor: C.orange } },
+        theme: "grid",
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 4;
+
+    y = drawSection(doc, "CUADRILLA / PARTICIPANTES", y);
+    const cuadrilla = datos.workers || [{}, {}, {}, {}];
+    const padded = [...cuadrilla];
+    while (padded.length < 5) padded.push({});
+
+    autoTable(doc, {
+        startY: y, margin: { left: 14, right: 14 },
+        head: [["Nombre del Trabajador", "Firma"]],
+        body: padded.map(w => [w.nombre || "", ""]),
+        headStyles: { fillColor: C.greenMid, textColor: C.white, fontStyle: "bold", fontSize: 8 },
+        styles: { fontSize: 8, cellPadding: 3, lineColor: [210, 210, 210], lineWidth: 0.2, minCellHeight: 10 },
+        columnStyles: { 1: { cellWidth: 60 } },
+        theme: "grid",
+    });
 
     drawFooter(doc, { ...footerMeta, pagLabel: "Pág. 1 de 1" });
+    return doc;
+}
 
+// ─────────────────────────────────────────────────────────────────
+// GENERADOR VEHÍCULO (Checklist 4x4)
+// ─────────────────────────────────────────────────────────────────
+export function generarVehiculo(datos: any): jsPDF {
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "letter" });
+    const fi = fmtDate(datos.fecha || datos.startDate || "");
+    const proyecto = datos.proyecto || datos.projectName || "[Proyecto]";
+    const headerMeta = { title: "CHECKLIST DE INSPECCIÓN VEHICULAR", code: "WA-VEH-001", version: "01", fecha: fi };
+    const footerMeta = { empresa: "Wirin Ambiental", codeVer: `WA-VEH-001 | v01 | ${fi}` };
+
+    let y = drawHeader(doc, { ...headerMeta, pagina: "1 de 1" });
+    y = drawCoverBox(doc, { badge: "INSPECCIÓN DIARIA", title: "Checklist Pre-operacional de Vehículo", subtitle: `Patente: ${datos.patente || "[N° Patente]"}` }, y);
+
+    y = drawInfoTable(doc, [
+        ["Proyecto", proyecto],
+        ["Conductor Responsable", datos.conductor || datos.workerName || "—"],
+        ["Marca / Modelo", `${datos.marca || "—"} / ${datos.modelo || "—"}`],
+        ["Kilometraje", datos.kilometraje || "—"],
+    ], y);
+
+    y = drawSection(doc, "LISTA DE CHEQUEO (SISTEMAS CRÍTICOS)", y);
+    const checks = [
+        ["Sistema de Frenos (Pedal, líquido)", "Operativo", ""],
+        ["Neumáticos (Desgaste, presión, repuesto)", "Operativo", ""],
+        ["Niveles de Fluidos (Aceite, refrigerante)", "Operativo", ""],
+        ["Sistema de Dirección", "Operativo", ""],
+        ["Luces (Frontales, traseras, intermitentes)", "Operativo", ""],
+        ["Cinturones de Seguridad", "Operativo", ""],
+        ["Kit de Emergencia y Extintor", "Operativo", ""],
+        ["Documentación del Vehículo", "Al día", ""],
+    ];
+
+    autoTable(doc, {
+        startY: y, margin: { left: 14, right: 14 },
+        head: [["Ítem a Inspeccionar", "Estado", "Observaciones"]],
+        body: checks,
+        headStyles: { fillColor: C.greenMid, textColor: C.white, fontStyle: "bold", fontSize: 8 },
+        styles: { fontSize: 8, cellPadding: 3, lineColor: [210, 210, 210], lineWidth: 0.2 },
+        columnStyles: { 0: { fontStyle: "bold", cellWidth: 55 }, 1: { cellWidth: 25, textColor: C.greenMid, fontStyle: "bold", halign: "center" as const } },
+        theme: "grid",
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 4;
+
+    y = drawParagraph(doc, "Declaro que la información contenida en esta lista de chequeo es verídica y el vehículo se encuentra en condiciones seguras para operar.", y, 7.5);
+    drawApprovalBox(doc, { elaboro: { nombre: datos.conductor || "[Conductor]" }, reviso: { nombre: datos.ssoAdvisor || "[Asesor SSO]" } }, y + 4);
+    drawFooter(doc, { ...footerMeta, pagLabel: "Pág. 1 de 1" });
+    return doc;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// GENERADOR CHARLA (Registro de Charla)
+// ─────────────────────────────────────────────────────────────────
+export function generarCharla(datos: any): jsPDF {
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "letter" });
+    const fi = fmtDate(datos.fecha || datos.startDate || "");
+    const proyecto = datos.proyecto || datos.projectName || "[Proyecto]";
+    const headerMeta = { title: "REGISTRO DE CHARLA DE SEGURIDAD", code: "WA-CHA-001", version: "01", fecha: fi };
+    const footerMeta = { empresa: "Wirin Ambiental", codeVer: `WA-CHA-001 | v01 | ${fi}` };
+
+    let y = drawHeader(doc, { ...headerMeta, pagina: "1 de 1" });
+    y = drawCoverBox(doc, { badge: "DIFUSIÓN SSO", title: "Charla de Seguridad Integral de 5 Minutos", subtitle: `Proyecto: ${proyecto}` }, y);
+
+    y = drawInfoTable(doc, [
+        ["Relator", datos.relator || datos.ssoAdvisor || "—"],
+        ["Fecha y Hora", `${fi} - ${datos.hora || "08:00 hrs"}`],
+        ["Temática Tratada", datos.tematica || "Riesgos del entorno y medidas preventivas."],
+    ], y);
+
+    y = drawSection(doc, "ASISTENTES", y);
+    const asistentes = datos.workers || [{}, {}, {}, {}, {}, {}];
+    const padded = [...asistentes];
+    while (padded.length < 8) padded.push({});
+
+    autoTable(doc, {
+        startY: y, margin: { left: 14, right: 14 },
+        head: [["N°", "Nombre Completo", "RUT", "Firma"]],
+        body: padded.map((w: any, i: number) => [i + 1, w.nombre || "", w.rut || "", ""]),
+        headStyles: { fillColor: C.greenMid, textColor: C.white, fontStyle: "bold", fontSize: 8 },
+        styles: { fontSize: 8, cellPadding: 3, lineColor: [210, 210, 210], lineWidth: 0.2, minCellHeight: 9 },
+        columnStyles: { 0: { cellWidth: 8, halign: "center" as const, fillColor: C.greenPale, textColor: C.greenMid, fontStyle: "bold" }, 1: { cellWidth: 55 }, 2: { cellWidth: 30 } },
+        theme: "grid",
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 4;
+
+    drawApprovalBox(doc, { elaboro: { nombre: datos.relator || "[Relator SSO]" }, reviso: { nombre: datos.projectManager || "[Jefe Proyecto]" } }, y + 4);
+    drawFooter(doc, { ...footerMeta, pagLabel: "Pág. 1 de 1" });
+    return doc;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// GENERADOR PPR (Plan de Prevención de Riesgos)
+// ─────────────────────────────────────────────────────────────────
+export function generarPPR(datos: any): jsPDF {
+    const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "letter" });
+    const pw = doc.internal.pageSize.getWidth();
+    const fi = fmtDate(datos.fecha || datos.startDate || "");
+    const proyecto = datos.proyecto || datos.projectName || "[Proyecto]";
+    const headerMeta = { title: "PLAN DE PREVENCIÓN DE RIESGOS (PPR) Y CRONOGRAMA", code: "WA-PPR-001", version: "01", fecha: fi };
+    const footerMeta = { empresa: "Wirin Ambiental", codeVer: `WA-PPR-001 | v01 | ${fi}` };
+
+    // Barra superior
+    doc.setFillColor(...C.greenMid);
+    doc.rect(0, 0, pw, 4, "F");
+
+    let y = 10;
+    doc.setTextColor(...C.greenDark); doc.setFontSize(14); doc.setFont("helvetica", "bold");
+    doc.text(headerMeta.title, 14, y + 4);
+    y += 12;
+
+    y = drawInfoTable(doc, [
+        ["Proyecto", proyecto, "Fecha Emisión", fi],
+        ["Responsable QHSE", datos.ssoAdvisor || "—", "Aprobador", datos.projectManager || "—"],
+    ], y);
+
+    doc.setFillColor(...C.greenMid);
+    doc.roundedRect(14, y, pw - 28, 8, 1, 1, "F");
+    doc.setTextColor(...C.white); doc.setFontSize(8.5); doc.text("CRONOGRAMA DE ACTIVIDADES", 18, y + 5.5);
+    y += 11;
+
+    const metas = [
+        ["Kick-off SSO", "Inicio de Proyecto", "Diario", "100%"],
+        ["Auditoría Terreno", "Revisión documental 4x4", "Semanal", "100%"],
+        ["Inspección EPP", "Revisión desgaste físico", "Mensual", "100%"],
+        ["Simulacro", "Rescate agreste / accidentes", "Anual", "100%"],
+        ["Cierre SSO", "Informe Final", "Fin Proy.", "100%"],
+    ];
+
+    autoTable(doc, {
+        startY: y, margin: { left: 14, right: 14 },
+        head: [["Actividad Preventiva", "Descripción General", "Frecuencia", "Meta"]],
+        body: metas,
+        headStyles: { fillColor: C.greenMid, textColor: C.white, fontStyle: "bold", fontSize: 8 },
+        styles: { fontSize: 8, cellPadding: 3, lineColor: [210, 210, 210], lineWidth: 0.2 },
+        columnStyles: { 0: { fontStyle: "bold", cellWidth: 50 }, 1: { cellWidth: 80 } },
+        theme: "grid",
+    });
+
+    drawFooter(doc, { ...footerMeta, pagLabel: "Pág. 1 de 1" });
+    return doc;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// GENERADOR COMUNICACIÓN (Checklist Equipo Comms)
+// ─────────────────────────────────────────────────────────────────
+export function generarComunicacion(datos: any): jsPDF {
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "letter" });
+    const fi = fmtDate(datos.fecha || datos.startDate || "");
+    const proyecto = datos.proyecto || datos.projectName || "[Proyecto]";
+    const headerMeta = { title: "CHECKLIST DE COMUNICACIONES EN TERRENO", code: "WA-COM-001", version: "01", fecha: fi };
+    const footerMeta = { empresa: "Wirin Ambiental", codeVer: `WA-COM-001 | v01 | ${fi}` };
+
+    let y = drawHeader(doc, { ...headerMeta, pagina: "1 de 1" });
+    y = drawCoverBox(doc, { badge: "EQUIPAMIENTO CRÍTICO", title: "Verificación de Equipos de Radio y Satelital", subtitle: `Proyecto: ${proyecto}` }, y);
+
+    y = drawInfoTable(doc, [
+        ["Responsable", datos.responsable || datos.workerName || "—"],
+        ["Frecuencia Rescate", datos.frecuencia || "Canal 1 / VHF 153.250 MHz"],
+        ["Fecha Check", fi],
+    ], y);
+
+    y = drawSection(doc, "VERIFICACIÓN DE EQUIPOS", y);
+    const checks = [
+        ["Radio VHF Principal", "Batería 100%, Señal OK", ""],
+        ["Radio VHF Backup", "Batería 100%, Señal OK", ""],
+        ["Teléfono Satelital", "Minutos Disp., Señal OK", ""],
+        ["Dispositivo GPS Localizador (InReach)", "Sincronizado, SOS Configurado", ""],
+    ];
+
+    autoTable(doc, {
+        startY: y, margin: { left: 14, right: 14 },
+        head: [["Equipo", "Estado", "Observaciones"]],
+        body: checks,
+        headStyles: { fillColor: C.greenMid, textColor: C.white, fontStyle: "bold", fontSize: 8 },
+        styles: { fontSize: 8, cellPadding: 3, lineColor: [210, 210, 210], lineWidth: 0.2 },
+        columnStyles: { 0: { fontStyle: "bold", cellWidth: 55 }, 1: { cellWidth: 35, textColor: C.greenMid, fontStyle: "bold" } },
+        theme: "grid",
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    y = (doc as any).lastAutoTable.finalY + 4;
+
+    drawApprovalBox(doc, { elaboro: { nombre: datos.responsable || "[Responsable]" }, reviso: { nombre: datos.ssoAdvisor || "[Asesor SSO]" } }, y + 4);
+    drawFooter(doc, { ...footerMeta, pagLabel: "Pág. 1 de 1" });
     return doc;
 }
 
@@ -799,17 +1084,36 @@ export async function descargarPDF(tipo: string, datos: any): Promise<void> {
         case "pts":
             doc = generarPTS(datos);
             break;
-        case "pre": {
-            // Import PRE generator dynamically
-            const { generatePRE } = await import("./generatePRE");
-            await generatePRE(datos);
-            return;
-        }
+        case "pre":
+            doc = generarAST({ ...datos, title: "Plan de Respuesta (PRE)" }); // Fallback for PRE since it was deleted
+            break;
+        case "epp":
+            doc = generarEPP(datos);
+            break;
+        case "odi":
+            doc = generarODI(datos);
+            break;
+        case "ast":
+            doc = generarAST(datos);
+            break;
+        case "vehiculo":
+            doc = generarVehiculo(datos);
+            break;
+        case "charla":
+            doc = generarCharla(datos);
+            break;
+        case "ppr":
+            doc = generarPPR(datos);
+            break;
+        case "comunicacion":
+            doc = generarComunicacion(datos);
+            break;
         default:
-            doc = generarGenerico(tipo, datos);
+            // Fallback en caso de módulo desconocido
+            doc = generarAST({ ...datos, title: "Módulo Desconocido" });
             filenames[tipo] = `WirinAmbiental_${tipo.toUpperCase()}_${fecha}.pdf`;
     }
 
-    const nombreArchivo = filenames[tipo] || `WirinAmbiental_${tipo}_${fecha}.pdf`;
+    const nombreArchivo = filenames[tipo] || `WirinAmbiental_${tipo.toUpperCase()}_${fecha}.pdf`;
     descargarBlob(doc, nombreArchivo);
 }
