@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef } from "react";
-import html2pdf from "html2pdf.js";
 import dynamic from "next/dynamic";
 import WirinLogo from "./components/WirinLogo";
 import SGSSTForm, { SGSSTData } from "./components/forms/SGSSTForm";
@@ -173,6 +172,9 @@ export default function HomePage() {
 
   const handleDownloadPDF = async () => {
     if (!contentRef.current) return;
+
+    // Importación dinámica obligatoria para evitar error 'self is not defined' en SSR (Next.js)
+    const html2pdf = (await import('html2pdf.js')).default;
 
     // Configurar html2pdf para crear un documento fluido sin cortes estrictos
     const opt: any = {
