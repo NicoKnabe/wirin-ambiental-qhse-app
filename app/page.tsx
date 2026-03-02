@@ -61,6 +61,7 @@ const defaultSGSST: SGSSTData = {
 
 const defaultPTS: PTSData = {
   ...defaultSGSST,
+  procedureTitle: "Monitoreo Flora y Fauna",
   elaboratedBy: "", elaboratedByRole: "Asesor SSO", elaboratedDate: today,
   reviewedBy: "", reviewedByRole: "Jefe de Proyecto", reviewedDate: today,
   approvedBy: "", approvedByRole: "Gerencia Wirin Ambiental", approvedDate: today,
@@ -81,7 +82,6 @@ const defaultPPR: PPRData = {
   client: "Transelec",
   year: "2026",
   month: "Marzo",
-  cotizacion: "0",
   elaboratedBy: "", elaboratedRole: "Experto en Prevención de Riesgos",
   reviewedBy: "", reviewedRole: "Jefe de Proyecto",
   approvedBy: "", approvedRole: "Gerencia Wirin Ambiental",

@@ -136,9 +136,7 @@ export default function ODIPreview({ data }: Props) {
                 {/* ===== MATRIZ DE RIESGOS ===== */}
                 {renderTable(RIESGOS_GENERALES, "RIESGOS GENERALES DE LA ORGANIZACIÓN")}
 
-                {data.cargo === "Especialista en Medio Biótico" &&
-                    renderTable(RIESGOS_BIOTICOS, "RIESGOS ESPECÍFICOS: ESPECIALISTA EN MEDIO BIÓTICO")
-                }
+                {renderTable(RIESGOS_BIOTICOS, "RIESGOS ESPECÍFICOS: ESPECIALISTA EN MEDIO BIÓTICO")}
 
                 {/* ===== CIERRE Y FIRMAS ===== */}
                 <div style={{ pageBreakInside: "avoid", marginTop: "30px", borderTop: "2px solid #000", paddingTop: "20px" }}>

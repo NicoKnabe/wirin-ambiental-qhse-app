@@ -5,7 +5,6 @@ export interface PPRData {
     client: string;
     year: string;
     month: string;
-    cotizacion: string;
     elaboratedBy: string;
     reviewedBy: string;
     approvedBy: string;
@@ -24,7 +23,6 @@ const months = [
     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
 
-const clients = ["Transelec", "Colbún", "AES Gener", "Enel Chile", "CGE Distribución", "Engie Chile", "Otro"];
 
 export default function PPRForm({ data, onChange }: PPRFormProps) {
     const update = (field: keyof PPRData, value: string) =>
@@ -48,10 +46,13 @@ export default function PPRForm({ data, onChange }: PPRFormProps) {
                 </div>
                 <div className="form-group">
                     <label className="form-label">Mandante</label>
-                    <select className="form-input" value={data.client} onChange={(e) => update("client", e.target.value)}>
-                        <option value="">Seleccionar...</option>
-                        {clients.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                    <input
+                        type="text"
+                        className="form-input"
+                        placeholder="Ej: Transelec"
+                        value={data.client}
+                        onChange={(e) => update("client", e.target.value)}
+                    />
                 </div>
                 <div className="form-group">
                     <label className="form-label">Año de Elaboración</label>
@@ -64,10 +65,6 @@ export default function PPRForm({ data, onChange }: PPRFormProps) {
                     <select className="form-input" value={data.month} onChange={(e) => update("month", e.target.value)}>
                         {months.map((m) => <option key={m} value={m}>{m}</option>)}
                     </select>
-                </div>
-                <div className="form-group">
-                    <label className="form-label">Tasa de Cotización Adicional (%)</label>
-                    <input type="number" min="0" max="100" step="0.1" className="form-input" placeholder="0.0" value={data.cotizacion} onChange={(e) => update("cotizacion", e.target.value)} />
                 </div>
             </div>
 
@@ -95,6 +92,6 @@ export default function PPRForm({ data, onChange }: PPRFormProps) {
                     </div>
                 ))}
             </div>
-        </div>
+        </div >
     );
 }

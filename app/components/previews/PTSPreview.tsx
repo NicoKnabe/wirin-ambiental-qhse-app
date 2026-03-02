@@ -84,11 +84,11 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
         <div id="pts-preview" className="pdf-document">
             <div className="pdf-page">
                 {/* Single Letterhead for the entire continuous document */}
-                <Letterhead documentTitle="PROCEDIMIENTO DE TRABAJO SEGURO — MONITOREO DE FLORA Y FAUNA" docCode={CODE} version={version} date={docDate} currentPage={1} totalPages={1} />
+                <Letterhead documentTitle={`PROCEDIMIENTO DE TRABAJO SEGURO — ${data.procedureTitle?.toUpperCase() || "MONITOREO DE FLORA Y FAUNA"}`} docCode={CODE} version={version} date={docDate} currentPage={1} totalPages={1} />
 
                 <div style={{ background: "linear-gradient(135deg, #0d3b1e 0%, #1B5E20 60%, #2E7D32 100%)", borderRadius: "8px", padding: "20px 28px", marginBottom: "16px", color: "white" }}>
                     <div style={{ fontSize: "8pt", letterSpacing: "0.2em", opacity: 0.7, marginBottom: "4px", textTransform: "uppercase" }}>Procedimiento de Trabajo Seguro</div>
-                    <div style={{ fontSize: "16pt", fontWeight: 700, fontFamily: "'Roboto Condensed', sans-serif" }}>Monitoreo de Flora y Fauna</div>
+                    <div style={{ fontSize: "16pt", fontWeight: 700, fontFamily: "'Roboto Condensed', sans-serif" }}>{data.procedureTitle || "Monitoreo de Flora y Fauna"}</div>
                     <div style={{ fontSize: "9pt", opacity: 0.85, marginTop: "4px" }}>Proyecto: <strong>{P}</strong> — Mandante: <strong>{C}</strong></div>
                 </div>
 

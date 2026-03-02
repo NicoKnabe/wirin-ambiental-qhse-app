@@ -14,16 +14,6 @@ interface Props {
     onChange: (data: ODIData) => void;
 }
 
-export const CARGOS_DISPONIBLES = [
-    "Especialista en Medio Biótico",
-    "Arqueólogo",
-    "Topógrafo",
-    "Supervisor de Terreno",
-    "Prevencionista de Riesgos",
-    "Jefe de Proyecto",
-    "Conductor",
-    "Otro (Especifique)"
-];
 
 export default function ODIForm({ data, onChange }: Props) {
     const handleChange = (field: keyof ODIData, value: string) => {
@@ -59,34 +49,14 @@ export default function ODIForm({ data, onChange }: Props) {
                     </div>
                     <div>
                         <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Cargo</label>
-                        <select
+                        <input
+                            type="text"
                             className="w-full p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                            value={CARGOS_DISPONIBLES.includes(data.cargo) ? data.cargo : "Otro (Especifique)"}
-                            onChange={(e) => {
-                                if (e.target.value !== "Otro (Especifique)") {
-                                    handleChange("cargo", e.target.value);
-                                } else {
-                                    handleChange("cargo", ""); // Clear for custom input
-                                }
-                            }}
-                        >
-                            {CARGOS_DISPONIBLES.map((c, i) => (
-                                <option key={i} value={c}>{c}</option>
-                            ))}
-                        </select>
+                            value={data.cargo}
+                            onChange={(e) => handleChange("cargo", e.target.value)}
+                            placeholder="Ej. Especialista en Medio Biótico"
+                        />
                     </div>
-                    {(!CARGOS_DISPONIBLES.includes(data.cargo) || data.cargo === "Otro (Especifique)") && (
-                        <div>
-                            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Especifique Cargo</label>
-                            <input
-                                type="text"
-                                className="w-full p-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                value={data.cargo === "Otro (Especifique)" ? "" : data.cargo}
-                                onChange={(e) => handleChange("cargo", e.target.value)}
-                                placeholder="Ingrese el cargo"
-                            />
-                        </div>
-                    )}
                 </div>
             </div>
 

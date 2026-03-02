@@ -3,6 +3,7 @@
 import { SGSSTData } from "./SGSSTForm";
 
 export interface PTSData extends SGSSTData {
+    procedureTitle: string;
     elaboratedBy: string;
     elaboratedByRole: string;
     elaboratedDate: string;
@@ -26,7 +27,6 @@ const regions = [
     "Aysén", "Magallanes y la Antártica Chilena"
 ];
 
-const clients = ["Transelec", "Colbún", "AES Gener", "Enel Chile", "CGE Distribución", "Engie Chile", "Otro"];
 
 export default function PTSForm({ data, onChange }: PTSFormProps) {
     const update = (field: keyof PTSData, value: string) =>
@@ -56,11 +56,25 @@ export default function PTSForm({ data, onChange }: PTSFormProps) {
                 </div>
 
                 <div className="form-group">
+                    <label className="form-label">Título del Procedimiento *</label>
+                    <input
+                        type="text"
+                        className="form-input"
+                        placeholder="Ej: Monitoreo Flora y Fauna"
+                        value={data.procedureTitle || ""}
+                        onChange={(e) => update("procedureTitle", e.target.value)}
+                    />
+                </div>
+
+                <div className="form-group">
                     <label className="form-label">Mandante</label>
-                    <select className="form-input" value={data.client} onChange={(e) => update("client", e.target.value)}>
-                        <option value="">Seleccionar...</option>
-                        {clients.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                    <input
+                        type="text"
+                        className="form-input"
+                        placeholder="Ej: Transelec"
+                        value={data.client}
+                        onChange={(e) => update("client", e.target.value)}
+                    />
                 </div>
 
                 <div className="form-group">

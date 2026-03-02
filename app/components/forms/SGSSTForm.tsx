@@ -27,7 +27,7 @@ const regions = [
     "Aysén", "Magallanes y la Antártica Chilena"
 ];
 
-const clients = ["Transelec", "Colbún", "AES Gener", "Enel Chile", "CGE Distribución", "Engie Chile", "Otro"];
+
 
 export default function SGSSTForm({ data, onChange }: SGSSTFormProps) {
     const update = (field: keyof SGSSTData, value: string) =>
@@ -58,16 +58,13 @@ export default function SGSSTForm({ data, onChange }: SGSSTFormProps) {
 
                 <div className="form-group">
                     <label className="form-label">Mandante *</label>
-                    <select
+                    <input
+                        type="text"
                         className="form-input"
+                        placeholder="Ej: Transelec"
                         value={data.client}
                         onChange={(e) => update("client", e.target.value)}
-                    >
-                        <option value="">Seleccionar empresa...</option>
-                        {clients.map((c) => (
-                            <option key={c} value={c}>{c}</option>
-                        ))}
-                    </select>
+                    />
                 </div>
 
                 <div className="form-group">
