@@ -296,73 +296,73 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* ============ RIGHT PANEL: Scrollable preview column ============ */}
-      <div
-        className="h-screen overflow-y-auto pb-32"
-        style={{
-          flex: 1,
-          background: "#e8eee8",
-          padding: "24px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        {/* Preview Header Bar — screen only */}
-        <div className="hide-on-print" style={{
-          width: "816px",
-          maxWidth: "100%",
-          background: "white",
-          borderRadius: "8px 8px 0 0",
-          padding: "10px 16px",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          marginBottom: "0",
-          borderBottom: "2px solid #4CAF50",
-        }}>
-          <div style={{ display: "flex", gap: "6px" }}>
-            {["#ff5f57", "#ffbd3e", "#29c840"].map((c) => (
-              <div key={c} style={{ width: "12px", height: "12px", borderRadius: "50%", background: c }} />
-            ))}
-          </div>
-          <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "12px", color: "#6b7280", letterSpacing: "0.05em" }}>
-              👁 VISTA PREVIA EN TIEMPO REAL
-            </span>
-            <span style={{
-              background: "#e8f5e9",
-              color: "#1B5E20",
-              fontSize: "10px",
-              fontWeight: 700,
-              padding: "2px 8px",
-              borderRadius: "10px",
-              border: "1px solid #c8e6c9",
-            }}>
-              {templates.find(t => t.id === activeTemplate)?.label} — PDF Carta
-            </span>
-          </div>
-          <div style={{ fontSize: "10px", color: "#9ca3af" }}>816 × 1056 px</div>
-        </div>
-
-        {/* ★ THE PAPER — This div will be cloned by react-to-print */}
+        {/* ============ RIGHT PANEL: Scrollable preview column ============ */}
         <div
-          ref={contentRef}
-          style={{ width: "816px", maxWidth: "100%", background: "white" }}
+          className="h-screen overflow-y-auto pb-32"
+          style={{
+            flex: 1,
+            background: "#e8eee8",
+            padding: "24px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
         >
-          {activeTemplate === "sgsst" && <SGSSTPreview data={sgsst} />}
-          {activeTemplate === "pts" && <PTSPreview data={pts} />}
-          {activeTemplate === "epp" && <EPPPreview data={epp} />}
-          {activeTemplate === "ppr" && <PPRPreview data={ppr} />}
-          {activeTemplate === "ast" && <ASTPreview data={ast} />}
-          {activeTemplate === "vehiculo" && <VehiculoPreview data={vehiculo} />}
-          {activeTemplate === "charla" && <CharlaPreview data={charla} />}
-          {activeTemplate === "comunicacion" && <ComChecklistPreview data={comunicacion} />}
-          {activeTemplate === "odi" && <ODIPreview data={odi} />}
-          {activeTemplate === "pre" && <PREPreview data={pre} />}
+          {/* Preview Header Bar — screen only */}
+          <div className="hide-on-print" style={{
+            width: "816px",
+            maxWidth: "100%",
+            background: "white",
+            borderRadius: "8px 8px 0 0",
+            padding: "10px 16px",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+            marginBottom: "0",
+            borderBottom: "2px solid #4CAF50",
+          }}>
+            <div style={{ display: "flex", gap: "6px" }}>
+              {["#ff5f57", "#ffbd3e", "#29c840"].map((c) => (
+                <div key={c} style={{ width: "12px", height: "12px", borderRadius: "50%", background: c }} />
+              ))}
+            </div>
+            <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "12px", color: "#6b7280", letterSpacing: "0.05em" }}>
+                👁 VISTA PREVIA EN TIEMPO REAL
+              </span>
+              <span style={{
+                background: "#e8f5e9",
+                color: "#1B5E20",
+                fontSize: "10px",
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: "10px",
+                border: "1px solid #c8e6c9",
+              }}>
+                {templates.find(t => t.id === activeTemplate)?.label} — PDF Carta
+              </span>
+            </div>
+            <div style={{ fontSize: "10px", color: "#9ca3af" }}>816 × 1056 px</div>
+          </div>
+
+          {/* ★ THE PAPER — This div will be cloned by react-to-print */}
+          <div
+            ref={contentRef}
+            style={{ width: "816px", maxWidth: "100%", background: "white" }}
+          >
+            {activeTemplate === "sgsst" && <SGSSTPreview data={sgsst} />}
+            {activeTemplate === "pts" && <PTSPreview data={pts} />}
+            {activeTemplate === "epp" && <EPPPreview data={epp} />}
+            {activeTemplate === "ppr" && <PPRPreview data={ppr} />}
+            {activeTemplate === "ast" && <ASTPreview data={ast} />}
+            {activeTemplate === "vehiculo" && <VehiculoPreview data={vehiculo} />}
+            {activeTemplate === "charla" && <CharlaPreview data={charla} />}
+            {activeTemplate === "comunicacion" && <ComChecklistPreview data={comunicacion} />}
+            {activeTemplate === "odi" && <ODIPreview data={odi} />}
+            {activeTemplate === "pre" && <PREPreview data={pre} />}
+          </div>
         </div>
       </div>
     </div>
