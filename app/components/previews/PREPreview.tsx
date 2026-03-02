@@ -21,10 +21,8 @@ export default function PREPreview({ data }: Props) {
         <div className="bg-gray-200 p-4 sm:p-8 min-h-screen flex justify-center overflow-auto">
             <div
                 id="pre-preview"
-                className="bg-white shadow-2xl relative pdf-container"
+                className="bg-white shadow-2xl relative pdf-container pdf-document pdf-page"
                 style={{
-                    width: "210mm",
-                    minHeight: "297mm",
                     padding: "20mm 15mm 25mm 15mm",
                     margin: "0 auto",
                     fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
@@ -154,8 +152,7 @@ export default function PREPreview({ data }: Props) {
                 </div>
 
                 {/* ===== PROTOCOLOS DE TERRENO ===== */}
-                <div className="page-break"></div>
-                <div style={{ marginBottom: "15px" }}>
+                <div style={{ marginBottom: "15px", marginTop: "24px" }}>
                     <div style={{ border: "1px solid #000", padding: "4px 8px", backgroundColor: "#1B5E20", color: "white", fontWeight: "bold", fontSize: "9pt", borderBottom: "none" }}>
                         4. PROTOCOLOS ESPECÍFICOS DE TERRENO
                     </div>
@@ -196,8 +193,7 @@ export default function PREPreview({ data }: Props) {
                 </div>
 
                 {/* ===== MATRIZ DE EVACUACIÓN (TABLA DINÁMICA) ===== */}
-                <div className="page-break"></div>
-                <div style={{ marginBottom: "15px", pageBreakInside: "avoid" }}>
+                <div style={{ marginBottom: "15px", pageBreakInside: "avoid", marginTop: "24px" }}>
                     <div style={{ border: "1px solid #000", padding: "4px 8px", backgroundColor: "#1B5E20", color: "white", fontWeight: "bold", fontSize: "9pt", borderBottom: "none" }}>
                         5. MATRIZ DE EVACUACIÓN Y CENTROS ASISTENCIALES
                     </div>

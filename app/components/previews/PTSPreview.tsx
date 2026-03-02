@@ -82,9 +82,9 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
 
     return (
         <div id="pts-preview" className="pdf-document">
-            {/* PAGE 1 */}
             <div className="pdf-page">
-                <Letterhead documentTitle="PROCEDIMIENTO DE TRABAJO SEGURO — MONITOREO DE FLORA Y FAUNA" docCode={CODE} version={version} date={docDate} currentPage={1} totalPages={3} />
+                {/* Single Letterhead for the entire continuous document */}
+                <Letterhead documentTitle="PROCEDIMIENTO DE TRABAJO SEGURO — MONITOREO DE FLORA Y FAUNA" docCode={CODE} version={version} date={docDate} currentPage={1} totalPages={1} />
 
                 <div style={{ background: "linear-gradient(135deg, #0d3b1e 0%, #1B5E20 60%, #2E7D32 100%)", borderRadius: "8px", padding: "20px 28px", marginBottom: "16px", color: "white" }}>
                     <div style={{ fontSize: "8pt", letterSpacing: "0.2em", opacity: 0.7, marginBottom: "4px", textTransform: "uppercase" }}>Procedimiento de Trabajo Seguro</div>
@@ -124,14 +124,7 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
                     ))}
                 </div>
 
-                <DocFooter code={CODE} version={version} date={docDate} page={1} total={3} />
-            </div>
-
-            {/* PAGE 2 — Risk Table + Procedure (corrected sections 6.1, 6.2, 6.2.1) */}
-            <div className="pdf-page">
-                <Letterhead documentTitle="PROCEDIMIENTO DE TRABAJO SEGURO — MONITOREO DE FLORA Y FAUNA" docCode={CODE} version={version} date={docDate} currentPage={2} totalPages={3} />
-
-                <div className="pdf-section-title">4. Riesgos, Consecuencias y Medidas de Control</div>
+                <div className="pdf-section-title" style={{ marginTop: "24px" }}>4. Riesgos, Consecuencias y Medidas de Control</div>
                 <div style={{ fontSize: "8pt", color: "#6b7280", marginBottom: "6px" }}>Datos sincronizados desde la Matriz HIRA del proyecto {P}.</div>
                 <table className="pdf-table" style={{ fontSize: "8pt" }}>
                     <thead>
@@ -199,15 +192,7 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
                     </ul>
                 </div>
 
-                <DocFooter code={CODE} version={version} date={docDate} page={2} total={3} />
-            </div>
-
-            {/* PAGE 3 — Signatures + Editable Diffusion Table */}
-            <div className="pdf-page">
-                <Letterhead documentTitle="PROCEDIMIENTO DE TRABAJO SEGURO — MONITOREO DE FLORA Y FAUNA" docCode={CODE} version={version} date={docDate} currentPage={3} totalPages={3} />
-
-                {/* Approval signatures */}
-                <div className="pdf-section-title">6. Aprobación del Procedimiento</div>
+                <div className="pdf-section-title" style={{ marginTop: "24px" }}>6. Aprobación del Procedimiento</div>
                 <div className="pdf-signature-box">
                     <SignatureUpload label="Elaboró" name={data.elaboratedBy || SSO} role={data.elaboratedByRole || "Asesor SSO"} signatureDataUrl={sig1} onSignatureChange={setSig1} />
                     <SignatureUpload label="Revisó" name={data.reviewedBy || PM} role={data.reviewedByRole || "Jefe de Proyecto"} signatureDataUrl={sig2} onSignatureChange={setSig2} />
@@ -295,7 +280,10 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
                     + Agregar trabajador
                 </button>
 
-                <DocFooter code={CODE} version={version} date={docDate} page={3} total={3} />
+                {/* Single Continuous Footer at the very bottom */}
+                <div style={{ marginTop: '40px' }}>
+                    <DocFooter code={CODE} version={version} date={docDate} page={1} total={1} />
+                </div>
             </div>
         </div>
     );

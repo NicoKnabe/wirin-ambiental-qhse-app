@@ -52,11 +52,11 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
 
     return (
         <div id="sgsst-preview" className="pdf-document">
-            {/* PAGE 1: Cover + Sections 1-4 */}
             <div className="pdf-page">
+                {/* Single Letterhead for the entire continuous document */}
                 <Letterhead
                     documentTitle="MANUAL DEL SISTEMA DE GESTIÓN DE SEGURIDAD Y SALUD EN EL TRABAJO"
-                    docCode={CODE} version={version} date={docDate} currentPage={1} totalPages={3}
+                    docCode={CODE} version={version} date={docDate} currentPage={1} totalPages={1}
                 />
 
                 {/* Cover Block */}
@@ -116,13 +116,6 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
                 <div className="pdf-section-body"><strong>4.1. Identificación de Peligros y Evaluación de Riesgos (IPER):</strong> Previo al inicio de los trabajos en terreno, se elabora la Matriz HIRA específica para el proyecto <strong>{P}</strong>, conforme a los requisitos del Art. 7 del DS 44.</div>
                 <div className="pdf-section-body"><strong>4.2. Jerarquía de Controles:</strong> Toda medida preventiva priorizará la eliminación del riesgo. De no ser posible, se aplicarán controles de ingeniería, señalización, advertencia, controles administrativos y, como última barrera, el uso de Elementos de Protección Personal (EPP).</div>
 
-                <DocFooter code={CODE} version={version} date={docDate} page={1} total={3} />
-            </div>
-
-            {/* PAGE 2: Sections 5-8 */}
-            <div className="pdf-page">
-                <Letterhead documentTitle="MANUAL DEL SISTEMA DE GESTIÓN DE SEGURIDAD Y SALUD EN EL TRABAJO" docCode={CODE} version={version} date={docDate} currentPage={2} totalPages={3} />
-
                 <div className="pdf-section-title">5. Estructura y Responsabilidades</div>
                 <table className="pdf-table">
                     <thead><tr><th style={{ width: "30%" }}>Cargo / Rol</th><th>Responsabilidades SSO</th></tr></thead>
@@ -178,13 +171,6 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
                     </tbody>
                 </table>
 
-                <DocFooter code={CODE} version={version} date={docDate} page={2} total={3} />
-            </div>
-
-            {/* PAGE 3: Sections 9-12 + Signatures */}
-            <div className="pdf-page">
-                <Letterhead documentTitle="MANUAL DEL SISTEMA DE GESTIÓN DE SEGURIDAD Y SALUD EN EL TRABAJO" docCode={CODE} version={version} date={docDate} currentPage={3} totalPages={3} />
-
                 <div className="pdf-section-title">9. Preparación y Respuesta ante Emergencias</div>
                 <div className="pdf-section-body">Se mantendrá un Plan de Emergencia Local ajustado a la geografía de <strong>{L}{R ? ", Región de " + R : ""}</strong>. En caso de accidente, se activará la derivación inmediata al centro de salud de la mutualidad en convenio más cercano.</div>
                 <table className="pdf-table">
@@ -201,11 +187,9 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
                     </tbody>
                 </table>
 
-                <div className="page-break"></div>
                 <div className="pdf-section-title">10. Seguimiento, Medición y Auditoría</div>
                 <div className="pdf-section-body">Se realizarán inspecciones planeadas y no planeadas al uso y estado de EPP, vehículos y herramientas. Mensualmente se enviará a <strong>{C}</strong> el reporte de horas hombre trabajadas y estadísticas de accidentabilidad conforme al Art. 73 del DS 44.</div>
 
-                <div className="page-break"></div>
                 <div className="pdf-section-title">11. INVESTIGACIÓN DE INCIDENTES Y ACCIDENTES</div>
                 <div className="pdf-section-body">
                     Todo incidente (con o sin tiempo perdido) será reportado a la jefatura directa en un plazo máximo de 24 horas. El objetivo principal es identificar las causas raíces mediante metodologías estandarizadas (como el Árbol de Causas) para evitar su repetición. El supervisor a cargo y el Asesor SSO conformarán el equipo investigador, recopilando evidencias, testimonios y registros del lugar. Posteriormente, se elaborará un informe técnico que definirá las medidas correctivas y preventivas, designando responsables y plazos de ejecución. El cierre del incidente solo se concretará una vez verificada la implementación efectiva de dichas medidas en terreno.
@@ -215,7 +199,7 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
                 <div className="pdf-section-body">La gerencia de Wirin Ambiental revisará anualmente (o al término del proyecto) el desempeño de este SGSST, evaluando el cumplimiento de metas y actualizando la Matriz HIRA ante cambios en la legislación o en los procesos operativos, conforme al ciclo PDCA establecido en el DS 44.</div>
 
                 {/* Signature Block — con carga de firma digital */}
-                <div style={{ marginTop: "24px", borderTop: "2px solid #c8e6c9", paddingTop: "14px" }}>
+                <div style={{ marginTop: "24px", borderTop: "2px solid #c8e6c9", paddingTop: "14px", pageBreakInside: 'avoid' }}>
                     <p style={{ fontSize: "9pt", fontWeight: 700, color: "#1B5E20", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "12px" }}>Aprobación Documental</p>
                     <div className="pdf-signature-box">
                         <SignatureUpload label="Elaboró" name={SSO} role="Asesor QHSE — Wirin Ambiental" signatureDataUrl={sig1} onSignatureChange={setSig1} />
@@ -224,7 +208,10 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
                     </div>
                 </div>
 
-                <DocFooter code={CODE} version={version} date={docDate} page={3} total={3} />
+                {/* Single Continuous Footer at the very bottom */}
+                <div style={{ marginTop: '40px' }}>
+                    <DocFooter code={CODE} version={version} date={docDate} page={1} total={1} />
+                </div>
             </div>
         </div>
     );

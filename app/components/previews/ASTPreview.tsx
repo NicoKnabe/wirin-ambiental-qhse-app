@@ -70,7 +70,7 @@ export default function ASTPreview({ data }: ASTPreviewProps) {
                 </table>
 
                 {/* 2. Análisis Paso a Paso */}
-                <div className="pdf-section-title break-before-page">2. Análisis Paso a Paso</div>
+                <div className="pdf-section-title">2. Análisis Paso a Paso</div>
                 <table className="pdf-table">
                     <thead>
                         <tr>
@@ -97,7 +97,7 @@ export default function ASTPreview({ data }: ASTPreviewProps) {
                 </table>
 
                 {/* 3. EPP Obligatorios */}
-                <div className="pdf-section-title break-before-page">3. Equipo de Protección Personal (EPP)</div>
+                <div className="pdf-section-title">3. Equipo de Protección Personal (EPP)</div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px", border: "1px solid #c8e6c9", padding: "12px", background: "#f0f7f0" }}>
                     {AST_PPE_LIST.map(item => (
                         <div key={item} style={{ fontSize: "8.5pt", display: "flex", alignItems: "center", gap: "6px" }}>
@@ -110,7 +110,7 @@ export default function ASTPreview({ data }: ASTPreviewProps) {
                 </div>
 
                 {/* 4. Participantes y Firmas */}
-                <div className="pdf-section-title break-before-page">4. Registro de Participantes y Firmas</div>
+                <div className="pdf-section-title">4. Registro de Participantes y Firmas</div>
                 <table className="pdf-table">
                     <thead>
                         <tr>
@@ -148,7 +148,7 @@ export default function ASTPreview({ data }: ASTPreviewProps) {
                 </table>
 
                 {/* 5. Cierre y Aprobación */}
-                <div className="pdf-signature-box break-before-page" style={{ gridTemplateColumns: "1fr 1fr", gap: "40px", marginTop: "40px" }}>
+                <div className="pdf-signature-box" style={{ gridTemplateColumns: "1fr 1fr", gap: "40px", marginTop: "40px" }}>
                     <div style={{ textAlign: "center" }}>
                         <SignatureUpload
                             label="Supervisor a Cargo"

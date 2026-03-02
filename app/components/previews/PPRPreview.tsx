@@ -77,10 +77,9 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
 
     return (
         <div id="ppr-preview" className="pdf-document">
-
-            {/* ===== PAGE 1: Cover + Sections 1-4 ===== */}
             <div className="pdf-page">
-                <Letterhead documentTitle="PROGRAMA DE PREVENCIÓN DE RIESGOS" docCode={CODE} version={version} date={docDate} currentPage={1} totalPages={4} />
+                {/* Single Letterhead for the entire continuous document */}
+                <Letterhead documentTitle="PROGRAMA DE PREVENCIÓN DE RIESGOS" docCode={CODE} version={version} date={docDate} currentPage={1} totalPages={1} />
 
                 <div style={{ background: "linear-gradient(135deg, #1B5E20, #4CAF50)", borderRadius: "8px", padding: "22px 28px", marginBottom: "16px", color: "white" }}>
                     <div style={{ fontSize: "8pt", letterSpacing: "0.2em", opacity: 0.75, marginBottom: "4px", textTransform: "uppercase" }}>Programa Anual</div>
@@ -154,13 +153,6 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
                     </tbody>
                 </table>
 
-                <DocFooter code={CODE} version={version} date={docDate} page={1} total={4} />
-            </div>
-
-            {/* ===== PAGE 2: Sections 5-8 ===== */}
-            <div className="pdf-page">
-                <Letterhead documentTitle="PROGRAMA DE PREVENCIÓN DE RIESGOS" docCode={CODE} version={version} date={docDate} currentPage={2} totalPages={4} />
-
                 <div className="pdf-section-title">5. Política de Seguridad y Salud en el Trabajo</div>
                 <div style={{ background: "#e8f5e9", border: "1px solid #c8e6c9", borderRadius: "6px", padding: "12px 16px", marginBottom: "12px", fontSize: "9pt", fontStyle: "italic" }}>
                     <p>Wirin Ambiental declara su compromiso con la prevención de accidentes del trabajo y enfermedades profesionales, protegiendo la vida e integridad física de sus trabajadores. La empresa implementará un Sistema de Gestión de SST conforme al <strong>DS 44 (2024)</strong>, cumpliendo todas las disposiciones legales vigentes y los estándares del mandante <strong>{C}</strong>.</p>
@@ -216,14 +208,7 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
                     </tbody>
                 </table>
 
-                <DocFooter code={CODE} version={version} date={docDate} page={2} total={4} />
-            </div>
-
-            {/* ===== PAGE 3: Gantt + Sections 9.6-9.7 ===== */}
-            <div className="pdf-page" style={{ pageBreakBefore: "always" }}>
-                <Letterhead documentTitle="PROGRAMA DE PREVENCIÓN DE RIESGOS" docCode={CODE} version={version} date={docDate} currentPage={3} totalPages={4} />
-
-                <div className="pdf-section-title">9. Plan de Trabajo — Carta Gantt {year}</div>
+                <div className="pdf-section-title" style={{ marginTop: "24px" }}>9. Plan de Trabajo — Carta Gantt {year}</div>
                 <div style={{ fontSize: "8pt", color: "#6b7280", marginBottom: "8px" }}>
                     Distribución anual de actividades de prevención para el proyecto {P}. Actualizado conforme DS 44 (2024).
                 </div>
@@ -280,15 +265,8 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
                     </tbody>
                 </table>
 
-                <DocFooter code={CODE} version={version} date={docDate} page={3} total={4} />
-            </div>
-
-            {/* ===== PAGE 4: Section 10 — HIRA Methodology + Signatures ===== */}
-            <div className="pdf-page" style={{ pageBreakBefore: "always" }}>
-                <Letterhead documentTitle="PROGRAMA DE PREVENCIÓN DE RIESGOS" docCode={CODE} version={version} date={docDate} currentPage={4} totalPages={4} />
-
                 {/* Section 10 — HIRA methodology (replaces old MIPER) */}
-                <div className="pdf-section-title">10. Diagnóstico — Metodología HIRA (Hazard Identification and Risk Assessment)</div>
+                <div className="pdf-section-title" style={{ marginTop: "24px" }}>10. Diagnóstico — Metodología HIRA (Hazard Identification and Risk Assessment)</div>
                 <div className="pdf-section-body">
                     La evaluación de riesgos del proyecto <strong>{P}</strong> se realiza conforme al Art. 7 del DS 44 (2024), utilizando la metodología <strong>HIRA (Hazard Identification and Risk Assessment)</strong>. Esta metodología permite identificar sistemáticamente los peligros asociados a cada actividad y evaluar el nivel de riesgo resultante mediante la combinación de su <strong>Probabilidad (L)</strong> y su <strong>Severidad / Consecuencia (S)</strong>:
                 </div>
@@ -349,7 +327,7 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
                 </div>
 
                 {/* Signature Block */}
-                <div style={{ borderTop: "2px solid #c8e6c9", paddingTop: "16px", marginTop: "16px" }}>
+                <div style={{ borderTop: "2px solid #c8e6c9", paddingTop: "16px", marginTop: "24px", pageBreakInside: 'avoid' }}>
                     <p style={{ fontSize: "9pt", fontWeight: 700, color: "#1B5E20", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>
                         Aprobación del Programa de Prevención
                     </p>
@@ -360,7 +338,10 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
                     </div>
                 </div>
 
-                <DocFooter code={CODE} version={version} date={docDate} page={4} total={4} />
+                {/* Single Continuous Footer at the very bottom */}
+                <div style={{ marginTop: '40px' }}>
+                    <DocFooter code={CODE} version={version} date={docDate} page={1} total={1} />
+                </div>
             </div>
         </div>
     );

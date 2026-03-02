@@ -331,21 +331,21 @@ body {
     line-height: 1.45 !important;
   }
 
-  /* Lock the container to true Letter size (8.5 x 11 inches at 96 DPI) */
+  /* Fluid Canvas Mode - Remove strict bounds so content flows naturally */
   .pdf-page {
-    width: 816px !important;
-    height: 1056px !important;
-    min-height: 1056px !important;
-    max-height: 1056px !important;
-    /* Reduce top/bottom padding slightly to give content more breathing room */
-    padding: 50px 64px 80px 64px !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    padding: 20px 40px !important;
     margin: 0 !important;
     box-shadow: none !important;
-    page-break-after: always !important;
-    break-after: page !important;
     position: relative !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     box-sizing: border-box !important;
+    /* Only break page between major blocks if necessary, but don't force it */
+    page-break-after: auto !important;
+    break-after: auto !important;
   }
 
   .print-page-wrapper {
