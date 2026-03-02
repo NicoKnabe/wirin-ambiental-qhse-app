@@ -1,0 +1,5 @@
+# Reglas Generales de Desarrollo para la aplicación Wirin Ambiental QHSE
+
+1. **Despliegue Continuo (Obligatorio):**
+   * **CUALQUIER modificación**, mejora, reparación de bugs o nueva característica que se implemente en el código debe ser inmediatamente confirmada (`git commit`) y enviada al repositorio remoto principal (`git push origin main`) al finalizar la tarea o hito.
+   * Esto es estrictamente requerido para asegurar que los cambios viajen instantáneamente a Vercel para su autodespliegue en el entorno de Producción. ¡Nunca dejes código funcional flotando únicamente en local!
