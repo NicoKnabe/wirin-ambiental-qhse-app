@@ -14,6 +14,7 @@ import CharlaForm, { CharlaData } from "./components/forms/CharlaForm";
 import ComChecklistForm, { ComChecklistData } from "./components/forms/ComChecklistForm";
 import ODIForm, { ODIData } from "./components/forms/ODIForm";
 import PREForm, { PREData } from "./components/forms/PREForm";
+import InvestigacionForm, { InvestigacionData } from "./components/forms/InvestigacionForm";
 
 // Lazy load previews (they are heavy)
 const SGSSTPreview = dynamic(() => import("./components/previews/SGSSTPreview"), { ssr: false });
@@ -26,8 +27,9 @@ const CharlaPreview = dynamic(() => import("./components/previews/CharlaPreview"
 const ComChecklistPreview = dynamic(() => import("./components/previews/ComChecklistPreview"), { ssr: false });
 const ODIPreview = dynamic(() => import("./components/previews/ODIPreview"), { ssr: false });
 const PREPreview = dynamic(() => import("./components/previews/PREPreview"), { ssr: false });
+const InvestigacionPreview = dynamic(() => import("./components/previews/InvestigacionPreview"), { ssr: false });
 
-type Template = "sgsst" | "pts" | "epp" | "ppr" | "ast" | "vehiculo" | "charla" | "comunicacion" | "odi" | "pre";
+type Template = "sgsst" | "pts" | "epp" | "ppr" | "ast" | "vehiculo" | "charla" | "comunicacion" | "odi" | "pre" | "investigacion";
 
 const templates = [
   { id: "sgsst" as Template, label: "SGSST", icon: "📋", desc: "Manual SGSST", color: "#2E7D32" },
@@ -40,6 +42,7 @@ const templates = [
   { id: "comunicacion" as Template, label: "Comunicaciones", icon: "📡", desc: "Zonas Remotas", color: "#607D8B" },
   { id: "odi" as Template, label: "ODI", icon: "📝", desc: "Derecho a Saber", color: "#795548" },
   { id: "pre" as Template, label: "PRE & MEDEVAC", icon: "🚑", desc: "Plan Emergencias", color: "#e11d48" },
+  { id: "investigacion" as Template, label: "Investigación", icon: "🔍", desc: "Incidentes 6M", color: "#9333ea" },
 ];
 
 const today = new Date().toISOString().split("T")[0];
@@ -155,6 +158,20 @@ const defaultPRE: PREData = {
   ]
 };
 
+const defaultInvestigacion: InvestigacionData = {
+  fecha: today,
+  hora: "10:00",
+  supervisor: "",
+  asesor: "",
+  descripcion: "",
+  evidencias: "",
+  ishikawa: { manoObra: "", maquinaria: "", metodos: "", materiales: "", medioAmbiente: "", medicion: "" },
+  planAccion: [],
+  elaboratedBy: "", elaboratedRole: "Asesor SSO",
+  reviewedBy: "", reviewedRole: "Jefe de Proyecto",
+  approvedBy: "", approvedRole: "Gerencia Wirin Ambiental",
+};
+
 export default function HomePage() {
   const [activeTemplate, setActiveTemplate] = useState<Template>("sgsst");
   const [sgsst, setSgsst] = useState<SGSSTData>(defaultSGSST);
@@ -167,6 +184,7 @@ export default function HomePage() {
   const [comunicacion, setComunicacion] = useState<ComChecklistData>(defaultComChecklist);
   const [odi, setOdi] = useState<ODIData>(defaultODI);
   const [pre, setPre] = useState<PREData>(defaultPRE);
+  const [investigacion, setInvestigacion] = useState<InvestigacionData>(defaultInvestigacion);
 
   // ── react-to-print: Master continuous scrolling PDF solution ──
   const contentRef = useRef<HTMLDivElement>(null);
@@ -280,6 +298,7 @@ export default function HomePage() {
             {activeTemplate === "comunicacion" && <ComChecklistForm data={comunicacion} onChange={setComunicacion} />}
             {activeTemplate === "odi" && <ODIForm data={odi} onChange={setOdi} />}
             {activeTemplate === "pre" && <PREForm data={pre} onChange={setPre} />}
+            {activeTemplate === "investigacion" && <InvestigacionForm data={investigacion} onChange={setInvestigacion} />}
           </div>
 
           {/* Bottom action area */}
@@ -385,6 +404,7 @@ export default function HomePage() {
             {activeTemplate === "comunicacion" && <ComChecklistPreview data={comunicacion} />}
             {activeTemplate === "odi" && <ODIPreview data={odi} />}
             {activeTemplate === "pre" && <PREPreview data={pre} />}
+            {activeTemplate === "investigacion" && <InvestigacionPreview data={investigacion} />}
           </div>
         </div>
       </div>
