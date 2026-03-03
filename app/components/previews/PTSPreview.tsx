@@ -153,8 +153,44 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
                     </tbody>
                 </table>
 
+                {/* NUEVA SECCIÓN: PROHIBICIONES DS 44 */}
+                <div className="mb-4 print:break-inside-avoid" style={{ marginTop: "14px" }}>
+                    <div className="pdf-section-title">
+                        5. Prohibiciones y Restricciones Operacionales (DS 44)
+                    </div>
+
+                    <div className="px-2">
+                        <h3 className="font-bold text-sm text-black mb-1 mt-2">5.1 Prohibiciones</h3>
+                        <ul className="list-disc pl-5 text-xs text-justify space-y-1 text-black mb-4">
+                            <li>Se prohíbe realizar actividades sin AST firmado.</li>
+                            <li>Se prohíbe intervenir zonas sin señalización y delimitación previa.</li>
+                            <li>Se prohíbe manipular reptiles sin EPP y experiencia acreditada.</li>
+                            <li>Se prohíbe operar vehículos bajo alcohol, drogas o distractores.</li>
+                            <li>Se prohíbe circular fuera de rutas autorizadas.</li>
+                            <li>Se prohíbe manipular herramientas en mal estado o sin verificación.</li>
+                            <li>Se prohíbe trabajar en solitario en sectores aislados.</li>
+                            <li>Se prohíbe ignorar condiciones climáticas que excedan parámetros operativos.</li>
+                            <li>Se prohíbe alterar controles o retirar señalización.</li>
+                            <li>Se prohíbe manipular fauna no objetivo.</li>
+                            <li>Se prohíbe iniciar actividades sin autorización del Jefe de Proyecto.</li>
+                        </ul>
+                        <h3 className="font-bold text-sm text-black mb-1">5.2 Restricciones Operacionales</h3>
+                        <ul className="list-disc pl-5 text-xs text-justify space-y-1 text-black">
+                            <li>Actividades restringidas a horarios con visibilidad adecuada.</li>
+                            <li>Restricción total con índice UV extremo.</li>
+                            <li>Restricción de desplazamiento en rutas no aprobadas.</li>
+                            <li>Restricción de conducción en caminos no pavimentados a 20 km/h máx.</li>
+                            <li>Restricción de faenas simultáneas sin coordinación previa con mandante.</li>
+                            <li>Restricción de captura si el ejemplar se encuentra en zona de riesgo geotécnico.</li>
+                            <li>Restricción de actividades durante camanchaca, tormentas o baja visibilidad.</li>
+                            <li>Restricción de relocalización fuera del polígono autorizado y evaluado.</li>
+                            <li>Restricción del uso de contenedores no sanitizados o dañados.</li>
+                        </ul>
+                    </div>
+                </div>
+
                 {/* Procedure: corrected to 6.1 / 6.2 / 6.2.1 structure as specified */}
-                <div className="pdf-section-title" style={{ marginTop: "14px" }}>5. Descripción del Proceso</div>
+                <div className="pdf-section-title" style={{ marginTop: "14px" }}>6. Descripción del Proceso</div>
 
                 <div className="font-bold text-[#1B5E20] mb-2 mt-4 text-[9pt]">6.1. Etapa de Gabinete (Pre-terreno)</div>
                 <div className="pdf-section-body mb-4">
@@ -192,7 +228,7 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
                     </ul>
                 </div>
 
-                <div className="pdf-section-title" style={{ marginTop: "24px" }}>6. Aprobación del Procedimiento</div>
+                <div className="pdf-section-title" style={{ marginTop: "24px" }}>7. Aprobación del Procedimiento</div>
                 <div className="pdf-signature-box">
                     <SignatureUpload label="Elaboró" name={data.elaboratedBy || SSO} role={data.elaboratedByRole || "Asesor SSO"} signatureDataUrl={sig1} onSignatureChange={setSig1} />
                     <SignatureUpload label="Revisó" name={data.reviewedBy || PM} role={data.reviewedByRole || "Jefe de Proyecto"} signatureDataUrl={sig2} onSignatureChange={setSig2} />
@@ -200,7 +236,7 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
                 </div>
 
                 {/* Editable diffusion table */}
-                <div className="pdf-section-title" style={{ marginTop: "18px" }}>7. Registro de Difusión — Firma de Trabajadores</div>
+                <div className="pdf-section-title" style={{ marginTop: "18px" }}>8. Registro de Difusión — Firma de Trabajadores</div>
                 <div style={{ fontSize: "8.5pt", color: "#6b7280", marginBottom: "8px" }}>
                     Acredito haber recibido, leído y comprendido el presente Procedimiento de Trabajo Seguro, comprometiéndome a su cumplimiento estricto.
                 </div>
