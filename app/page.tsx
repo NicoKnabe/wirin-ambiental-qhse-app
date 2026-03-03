@@ -243,7 +243,7 @@ export default function HomePage() {
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
 
         {/* ============ LEFT PANEL: Form (no-print) ============ */}
-        <div className="no-print" style={{
+        <div className="no-print overflow-x-hidden" style={{
           width: "380px",
           minWidth: "340px",
           background: "white",
@@ -256,12 +256,14 @@ export default function HomePage() {
         }}>
           {/* Template Tabs */}
           <div style={{ padding: "12px 16px 0", background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr", gap: "6px", marginBottom: "0" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px", marginBottom: "0" }}>
               {templates.map((t) => (
                 <button
                   key={t.id}
                   onClick={() => setActiveTemplate(t.id)}
                   style={{
+                    flex: "1 1 50px",
+                    maxWidth: "68px",
                     padding: "8px 4px",
                     borderRadius: "8px 8px 0 0",
                     border: "none",
