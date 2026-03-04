@@ -97,13 +97,21 @@ export default function IPERPreview({ data }: IPERPreviewProps) {
                     <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
                         <thead>
                             <tr>
-                                {["Actividad", "Peligro", "Riesgo / Incidente", "Puro", "Controles DS 44", "Residual", "Req. Legales"].map((h, i) => (
-                                    <th key={h} style={{
-                                        background: "#2c4a72", color: "#ffffff", padding: "8px 4px",
-                                        textAlign: "center", verticalAlign: "middle", fontSize: "7.5pt", fontWeight: 800,
+                                {[
+                                    "① ACTIVIDAD",
+                                    "② PELIGRO",
+                                    "③ RIESGO / INCIDENTE",
+                                    <span key="puro">④ EVALUACIÓN<br />RIESGO PURO<br />P × C = MR</span>,
+                                    <span key="ctrl">⑤ JERARQUÍA DE<br />CONTROLES DS 44</span>,
+                                    <span key="res">⑥ EVALUACIÓN<br />RIESGO RESIDUAL<br />P × C = MR</span>,
+                                    <span key="leg">⑦ REQUISITOS<br />LEGALES</span>
+                                ].map((h, i) => (
+                                    <th key={i} style={{
+                                        background: "#2c4a72", color: "#ffffff", padding: "4px 3px",
+                                        textAlign: "center", verticalAlign: "middle", fontSize: "7pt", fontWeight: 800,
                                         textTransform: "uppercase", letterSpacing: 0.2,
-                                        border: "1px solid #c8d6e5",
-                                        width: i === 0 ? "9%" : i === 1 ? "11.5%" : i === 2 ? "11.5%" : i === 3 ? "7.2%" : i === 4 ? "44.6%" : i === 5 ? "7.2%" : "9%"
+                                        border: "1px solid #c8d6e5", lineHeight: 1.15,
+                                        width: i === 0 ? "8%" : i === 1 ? "12.5%" : i === 2 ? "12.5%" : i === 3 ? "9%" : i === 4 ? "40%" : i === 5 ? "9%" : "9%"
                                     }}>{h}</th>
                                 ))}
                             </tr>
@@ -116,8 +124,8 @@ export default function IPERPreview({ data }: IPERPreviewProps) {
                                         {/* Actividad */}
                                         {fila.isFirstOfGroup && (
                                             <td rowSpan={fila.rowSpanCount} style={{
-                                                padding: "8px 6px", border: "1px solid #c8d6e5", borderLeft: "3px solid #e8a020",
-                                                fontWeight: 700, fontSize: "7pt", textTransform: "uppercase",
+                                                padding: "4px 3px", border: "1px solid #c8d6e5", borderLeft: "3px solid #e8a020",
+                                                fontWeight: 700, fontSize: "6.5pt", textTransform: "uppercase",
                                                 color: "#0f172a", verticalAlign: "middle", textAlign: "center",
                                                 wordBreak: "break-word"
                                             }}>
@@ -126,42 +134,42 @@ export default function IPERPreview({ data }: IPERPreviewProps) {
                                         )}
 
                                         {/* Peligro */}
-                                        <td style={{ padding: "8px 6px", border: "1px solid #c8d6e5", verticalAlign: "middle", fontSize: "7pt", color: "#334155", wordBreak: "break-word" }}>
+                                        <td style={{ padding: "4px 3px", border: "1px solid #c8d6e5", verticalAlign: "middle", fontSize: "6.5pt", color: "#334155", wordBreak: "break-word" }}>
                                             {fila.peligro}
                                         </td>
 
                                         {/* Riesgo */}
-                                        <td style={{ padding: "8px 6px", border: "1px solid #c8d6e5", verticalAlign: "middle", fontSize: "7pt", color: "#c0392b", fontWeight: 600, wordBreak: "break-word" }}>
+                                        <td style={{ padding: "4px 3px", border: "1px solid #c8d6e5", verticalAlign: "middle", fontSize: "6.5pt", color: "#c0392b", fontWeight: 600, wordBreak: "break-word" }}>
                                             {fila.riesgo}
                                         </td>
 
                                         {/* Riesgo Puro */}
-                                        <td style={{ padding: "8px 4px", border: "1px solid #c8d6e5", verticalAlign: "middle", background: nivelPuro.bg }}>
+                                        <td style={{ padding: "4px 3px", border: "1px solid #c8d6e5", verticalAlign: "middle", background: nivelPuro.bg }}>
                                             <NivelBadge {...fila.riesgo_puro} nivel={fila.riesgo_puro?.nivel} />
                                         </td>
 
                                         {/* Controles */}
-                                        <td style={{ padding: "8px 6px", border: "1px solid #c8d6e5", verticalAlign: "middle" }}>
-                                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                        <td style={{ padding: "4px 3px", border: "1px solid #c8d6e5", verticalAlign: "middle" }}>
+                                            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                                                 {fila.controles?.map((ctrl: any, j: number) => (
-                                                    <div key={j} style={{ display: "flex", gap: 6, alignItems: "flex-start", wordBreak: "break-word" }}>
+                                                    <div key={j} style={{ display: "flex", gap: 4, alignItems: "flex-start", wordBreak: "break-word" }}>
                                                         <CtrlTag tipo={ctrl.tipo} />
-                                                        <span style={{ fontSize: "7pt", lineHeight: 1.3, color: "#1e293b", textAlign: "left" }}>{ctrl.medida}</span>
+                                                        <span style={{ fontSize: "6.5pt", lineHeight: 1.3, color: "#1e293b", textAlign: "left" }}>{ctrl.medida}</span>
                                                     </div>
                                                 ))}
                                             </div>
                                         </td>
 
                                         {/* Riesgo Residual */}
-                                        <td style={{ padding: "8px 4px", border: "1px solid #c8d6e5", verticalAlign: "middle", background: (NIVEL_COLORS[fila.riesgo_residual?.nivel] || NIVEL_COLORS.Aceptable).bg }}>
+                                        <td style={{ padding: "4px 3px", border: "1px solid #c8d6e5", verticalAlign: "middle", background: (NIVEL_COLORS[fila.riesgo_residual?.nivel] || NIVEL_COLORS.Aceptable).bg }}>
                                             <NivelBadge {...fila.riesgo_residual} nivel={fila.riesgo_residual?.nivel} />
                                         </td>
 
                                         {/* Legal */}
-                                        <td style={{ padding: "8px 6px", border: "1px solid #c8d6e5", verticalAlign: "middle" }}>
-                                            <ul style={{ margin: 0, paddingLeft: 12, fontSize: "6.5pt", color: "#475569", wordBreak: "break-word" }}>
+                                        <td style={{ padding: "4px 3px", border: "1px solid #c8d6e5", verticalAlign: "middle" }}>
+                                            <ul style={{ margin: 0, paddingLeft: 10, fontSize: "6.5pt", color: "#475569", wordBreak: "break-word" }}>
                                                 {fila.legal?.map((l: string, j: number) => (
-                                                    <li key={j} style={{ paddingBottom: 3 }}>{l}</li>
+                                                    <li key={j} style={{ paddingBottom: 2 }}>{l}</li>
                                                 ))}
                                             </ul>
                                         </td>
