@@ -1,60 +1,111 @@
 import { useState, useRef } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
-// ─── DATA ESTÁTICA POR DEFECTO (PLANTILLA) ──────────────────────────────────
-const defaultIperData = {
+// ─── DATA ESTÁTICA POR DEFECTO (PLANTILLA BASE HTML MATRIZ_IPER_DS44) ────────
+const MATRIZ_BASE = {
     filas: [
         {
-            actividad: "Desplazamiento pedestre en terreno",
-            peligro: "Superficies irregulares, obstáculos, desniveles",
-            riesgo: "Caídas a mismo distinto nivel / Torceduras",
-            riesgo_puro: { p: 8, c: 2, mr: 16, nivel: "Moderado" },
+            actividad: "Desplazamiento Pedestre\n(Recorrido)",
+            peligro: "🌞 Radiación solar térmica y UV",
+            riesgo: "Exposición a radiación UV / Quemaduras, deshidratación, cáncer a la piel.",
+            riesgo_puro: { p: 12, c: 2, mr: 24, nivel: "Moderado" },
             controles: [
-                { tipo: "Administración", medida: "Caminar solo por senderos habilitados. Mantener atención al entorno. No correr." },
-                { tipo: "EPP", medida: "Uso obligatorio de calzado de seguridad (botines o zapatos caña alta)." }
+                { tipo: "Administración", medida: "Evitar exposición cerca del mediodía; realizar actividades bajo sombra si es posible; hidratación constante mínima 250 ml/hora." },
+                { tipo: "EPP", medida: "Bloqueador solar FPS +50 (reaplicar c/2 h); gorro legionario con filtro UV; ropa manga larga con filtro UV (UPF ≥ 40); lentes oscuros con filtro UV." }
+            ],
+            riesgo_residual: { p: 4, c: 1, mr: 4, nivel: "Aceptable" },
+            legal: ["Ley 16.744", "Ley 20.096 (Radiación UV)", "DS 594 Art. 109"]
+        },
+        {
+            actividad: "Desplazamiento Pedestre\n(Recorrido)",
+            peligro: "⚠️ Superficies irregulares, con pendiente o mojadas",
+            riesgo: "Caída a mismo nivel / Fracturas, esguinces, contusiones.",
+            riesgo_puro: { p: 12, c: 2, mr: 24, nivel: "Moderado" },
+            controles: [
+                { tipo: "Administración", medida: "Caminar con pasos firmes y lentos; evitar caminos resbalosos o con pendiente pronunciada; apoyarse con bastón en pendientes; desplazamiento en grupo." },
+                { tipo: "EPP", medida: "Uso obligatorio de calzado de seguridad antideslizante tipo trekking con suela dentada; polaina en terreno de vegetación densa." }
             ],
             riesgo_residual: { p: 4, c: 2, mr: 8, nivel: "Aceptable" },
-            legal: ["Ley 16.744", "DS 594 Art. 37"]
+            legal: ["Ley 16.744", "DS 594 Art. 6", "DS 44 Jerarquía de Controles"]
         },
         {
-            actividad: "Conducción vehicular rutera",
-            peligro: "Vehículos en movimiento, exceso de velocidad, fatiga",
-            riesgo: "Choques, colisiones, volcamientos",
-            riesgo_puro: { p: 8, c: 4, mr: 32, nivel: "Substancial" },
+            actividad: "Desplazamiento Pedestre\n(Recorrido)",
+            peligro: "🎒 Manejo manual de cargas (mochilas/equipos)",
+            riesgo: "Sobreesfuerzo físico / Trastornos musculoesqueléticos (lumbalgia, tendinitis).",
+            riesgo_puro: { p: 12, c: 2, mr: 24, nivel: "Moderado" },
             controles: [
-                { tipo: "Administración", medida: "Respetar límites de velocidad. Conducir a la defensiva. Curso manejo 4x4 si aplica." },
-                { tipo: "Administración", medida: "Checklist pre-uso del vehículo diario." }
+                { tipo: "Administración", medida: "Distribuir peso máximo de 25 kg (hombres) y 20 kg (mujeres); pausas activas de 5 min cada 30 min; mantener espalda recta al elevar cargas; rotación de carga entre el equipo." },
+                { tipo: "EPP", medida: "Uso obligatorio de mochilas ergonómicas con soporte lumbar y cinturón de cadera; faja lumbar en caso de cargas sobre 15 kg." }
             ],
-            riesgo_residual: { p: 2, c: 4, mr: 8, nivel: "Aceptable" },
-            legal: ["Ley 18.290 de Tránsito", "Decreto 170 MINTRAB"]
+            riesgo_residual: { p: 4, c: 1, mr: 4, nivel: "Aceptable" },
+            legal: ["Ley 20.001 (Manejo Manual de Carga)", "Ley 20.949 (Ley del Saco)", "DS 63 (Reglamento Ley 20.001)"]
         },
         {
-            actividad: "Exposición a factores climáticos",
-            peligro: "Radiación Ultravioleta (UV) de origen solar",
-            riesgo: "Quemaduras solares, insolación, cáncer de piel a largo plazo",
+            actividad: "Desplazamiento Pedestre\n(Recorrido)",
+            peligro: "🚗 Tránsito de vehículos por el área de estudio",
+            riesgo: "Atropello / Fracturas, TEC, muerte.",
             riesgo_puro: { p: 8, c: 3, mr: 24, nivel: "Moderado" },
             controles: [
-                { tipo: "Administración", medida: "Evitar exposición directa entre las 11:00 y las 16:00 horas si es posible." },
-                { tipo: "EPP", medida: "Uso de bloqueador solar factor 50+, lentes con filtro UV, legionario y manga larga." }
+                { tipo: "Administración", medida: "Mantener atención en zonas de tránsito; evitar cruzar carreteras en curvas o sectores sin visibilidad; coordinar con jefe de terreno antes de cruzar vías; preferir zonas habilitadas para peatones." },
+                { tipo: "EPP", medida: "Uso obligatorio de chaleco reflectante certificado (clase II mínimo) y luminaria corporal en condiciones de baja visibilidad o trabajo nocturno." }
             ],
             riesgo_residual: { p: 4, c: 3, mr: 12, nivel: "Aceptable" },
-            legal: ["Ley 20.096", "Guía Técnica Radiación UV Minsal"]
+            legal: ["Ley 16.744", "Ley 18.290 (Ley de Tránsito)", "DS 44 Art. 20"]
         },
         {
-            actividad: "Trabajo en solitario (zonas remotas)",
-            peligro: "Aislamiento, falta de comunicación oportuna ante emergencia",
-            riesgo: "Agravamiento de lesiones, retraso en rescate",
-            riesgo_puro: { p: 4, c: 4, mr: 16, nivel: "Moderado" },
+            actividad: "Desplazamiento Pedestre\n(Recorrido)",
+            peligro: "🌿 Flora silvestre (espinas, alergenos)",
+            riesgo: "Contacto con flora / Reacciones alérgicas, heridas cortopunzantes, dermatitis de contacto.",
+            riesgo_puro: { p: 12, c: 1, mr: 12, nivel: "Aceptable" },
             controles: [
-                { tipo: "Ingeniería", medida: "Portar dispositivo de comunicación satelital (InReach) o radio." },
-                { tipo: "Administración", medida: "Definir horario de reportes. Sistema de monitoreo de personal." }
+                { tipo: "Administración", medida: "Identificación previa del entorno florístico de riesgo; briefing al equipo sobre especies de riesgo (quillay, quisco, litre); botiquín con antihistamínicos y corticoides tópicos." },
+                { tipo: "EPP", medida: "Ropa de trabajo que cubra completamente brazos y piernas; guantes de cuero o anticorte resistentes; calzado cerrado tipo trekking; polaina en matorrales densos." }
             ],
-            riesgo_residual: { p: 2, c: 4, mr: 8, nivel: "Aceptable" },
-            legal: ["DS 594 (Saneamiento)", "Protocolo de Emergencias Wirin"]
+            riesgo_residual: { p: 4, c: 1, mr: 4, nivel: "Aceptable" },
+            legal: ["Ley 16.744", "DS 594 Art. 7 y 8", "DS 44 Jerarquía de Controles"]
+        },
+        {
+            actividad: "Instalación de Trampas / Muestreo",
+            peligro: "🦎 Fauna silvestre, insectos y vectores biológicos",
+            riesgo: "Contacto con fauna / Shock anafiláctico, infecciones zoonóticas, mordeduras, picaduras.",
+            riesgo_puro: { p: 12, c: 3, mr: 36, nivel: "Substancial" },
+            controles: [
+                { tipo: "Administración", medida: "Procedimiento específico de manipulación de fauna; precaución al revisar madrigueras y huecos; no manipular animales con mano desnuda; desinfección de trampas antes y después de uso; revisar ropa y calzado al regresar; protocolo de emergencia para anafilaxis (adrenalina autoinyectable en botiquín)." },
+                { tipo: "EPP", medida: "Guantes de cuero o nitrilo reforzados; mascarilla FFP2 en manipulación de trampas; repelente de insectos DEET ≥ 20%; polaina y ropa de manga larga; revisión de garrapatas post-actividad." }
+            ],
+            riesgo_residual: { p: 4, c: 2, mr: 8, nivel: "Aceptable" },
+            legal: ["Ley 16.744", "DS 594 Párrafo III (Agentes Biológicos)", "DS 44 Art. 14 (Riesgos Biológicos)", "Circ. N°3.243 SUSESO"]
+        },
+        {
+            actividad: "Monitoreo Nocturno",
+            peligro: "🌑 Ausencia de luz natural / Bajas temperaturas",
+            riesgo: "Caídas, golpes con objetos, hipotermia moderada / Fracturas, contusiones, hipotermia.",
+            riesgo_puro: { p: 12, c: 2, mr: 24, nivel: "Moderado" },
+            controles: [
+                { tipo: "Administración", medida: "Verificación previa de iluminación personal y de respaldo; no alejarse del vehículo en solitario; comunicación cada 30 min con base/supervisor; evitar exposición prolongada al frío; horario máximo de monitoreo nocturno definido en procedimiento." },
+                { tipo: "EPP", medida: "Linterna frontal LED con batería de respaldo; chaleco reflectante; vestimenta térmica en tres capas (base térmica, polar, cortaviento impermeable); guantes térmicos; gorro tipo balaclaava; calzado impermeable aislante." }
+            ],
+            riesgo_residual: { p: 4, c: 1, mr: 4, nivel: "Aceptable" },
+            legal: ["Ley 16.744", "DS 594 Art. 96–99 (Exposición al Frío)", "DS 44 Art. 20", "Ley 19.404 (Trabajo Nocturno)"]
+        },
+        {
+            actividad: "Conducción Vehicular\n(Traslados)",
+            peligro: "🚙 Conducción en ruta y laderas (off-road / camino rural)",
+            riesgo: "Choque, colisión, volcamiento / Lesiones graves, TEC, muerte.",
+            riesgo_puro: { p: 12, c: 3, mr: 36, nivel: "Substancial" },
+            controles: [
+                { tipo: "Ingeniería", medida: "Barra antivuelco certificada (jaula Roll-Bar) en camionetas; kit airbag activo; neumáticos con DOT vigente y banda de rodado adecuada a terreno; sistema de comunicación satelital." },
+                { tipo: "Administración", medida: "Licencia de conducir vigente y habilitada para la categoría del vehículo; check list diario pre-operacional (Formulario DS 44); velocidad máxima 40 km/h en caminos no pavimentados; prohibido uso de celular mientras se conduce; manejo a la defensiva; límite de conducción continua 2 h (pausa mínima 15 min); política alcohol cero; comunicación de ruta al supervisor antes de partir." },
+                { tipo: "EPP", medida: "Cinturón de seguridad obligatorio para todos los ocupantes; casco en zonas de riesgo de proyección si aplica; chaleco reflectante al bajarse del vehículo en ruta." }
+            ],
+            riesgo_residual: { p: 4, c: 3, mr: 12, nivel: "Aceptable" },
+            legal: ["Ley 16.744", "Ley 18.290 (Ley de Tránsito)", "DS 44 Art. 22 (Conducción)", "NCh 2439 (Vehículos Livianos)", "Res. Ex. N°156 (Check List Vehíc.)"]
         }
     ]
 };
 
-// ─── HELPERS ────────────────────────────────────────────────────────────────
+// ─── HELPERS DE COLORES Y ETIQUETAS ──────────────────────────────────────────
 const NIVEL_COLORS = {
     Substancial: { bg: "#fde8e8", text: "#c0392b", border: "#e74c3c", badge: "#c0392b" },
     Moderado: { bg: "#fef3e2", text: "#e67e22", border: "#f39c12", badge: "#e67e22" },
@@ -65,8 +116,6 @@ const TIPO_COLORS = {
     "Ingeniería": { bg: "#2980b9", label: "ING" },
     "Administración": { bg: "#8e44ad", label: "ADM" },
     "EPP": { bg: "#16a085", label: "EPP" },
-    "Eliminación": { bg: "#c0392b", label: "ELIM" },
-    "Sustitución": { bg: "#d35400", label: "SUST" },
 };
 
 function NivelBadge({ nivel, mr, p, c }) {
@@ -102,7 +151,7 @@ function CtrlTag({ tipo }) {
     );
 }
 
-// ─── COMPONENTE PRINCIPAL (LAYOUT DIVIDIDO) ──────────────────────────────────
+// ─── COMPONENTE PRINCIPAL IPER STATIC + LOCAL PDF ────────────────────────────
 export default function IPERModule() {
     const today = new Date().toISOString().split("T")[0];
     const [proyecto, setProyecto] = useState("");
@@ -110,36 +159,125 @@ export default function IPERModule() {
     const [ubicacion, setUbicacion] = useState("");
     const [fecha, setFecha] = useState(today);
 
-    // Usamos el JSON estático por defecto
     const iperData = {
-        proyecto: proyecto || "Proyecto de Terreno (Plantilla Estándar)",
+        proyecto: proyecto || "Proyecto Estudio Base",
         mandante: mandante,
         ubicacion: ubicacion,
         fecha: fecha,
-        filas: defaultIperData.filas
+        filas: MATRIZ_BASE.filas
     };
 
     const tableRef = useRef(null);
 
-    // ── Exportar HTML imprimible ─────────────────────────────────────────────
-    function exportarHTML() {
-        if (!iperData) return;
-        const html = buildExportHTML(iperData);
-        const blob = new Blob([html], { type: "text/html;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Matriz_IPER_${(iperData.proyecto || "proyecto").replace(/\s+/g, "_")}.html`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
+    // ── MOTOR PDF LOCAL TOTALMENTE AISLADO ──────────────────────────────────
+    const descargarPDFLocal = () => {
+        // Landscape A4 orientation
+        const doc = new jsPDF('landscape', 'pt', 'a4');
 
-    // ── Render ───────────────────────────────────────────────────────────────
+        // Encabezado Principal
+        doc.setFillColor(26, 46, 74); // #1a2e4a
+        doc.rect(40, 40, doc.internal.pageSize.width - 80, 80, 'F');
+
+        doc.setTextColor(232, 160, 32); // #e8a020
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("DS 44 · GESTIÓN PREVENTIVA DE RIESGOS LABORALES", 55, 60);
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(18);
+        doc.text(`Matriz IPER — ${iperData.proyecto}`, 55, 85);
+
+        doc.setTextColor(176, 196, 222);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Generada: ${iperData.fecha}  |  Mandante: ${iperData.mandante || 'N/A'}  |  Ubicación: ${iperData.ubicacion || 'N/A'}`, 55, 105);
+
+        // Preparar Data para AutoTable
+        const tableHeaders = [
+            ["Actividad\n(Proceso)", "Peligro", "Riesgo / Incidente", "Puro\nP×C=MR", "Controles DS 44", "Residual\nP×C=MR", "Requisitos Legales"]
+        ];
+
+        const tableBody = iperData.filas.map((f, i) => {
+            // Controles formateados textualmente
+            const controlesText = f.controles.map(c => `[${c.tipo.slice(0, 3).toUpperCase()}] ${c.medida}`).join("\n\n");
+            const legalText = f.legal.join("\n");
+            // Celdas precalculadas para PxC=MR
+            const puroText = `P: ${f.riesgo_puro.p} x C: ${f.riesgo_puro.c}\n\nMR: ${f.riesgo_puro.mr}\n${f.riesgo_puro.nivel}`;
+            const residualText = `P: ${f.riesgo_residual.p} x C: ${f.riesgo_residual.c}\n\nMR: ${f.riesgo_residual.mr}\n${f.riesgo_residual.nivel}`;
+
+            return [
+                f.actividad,
+                f.peligro,
+                f.riesgo,
+                puroText,
+                controlesText,
+                residualText,
+                legalText
+            ];
+        });
+
+        // Mapeo de colores estáticos para AutoTable
+        const nivelBgColor = {
+            Substancial: [253, 232, 232],
+            Moderado: [254, 243, 226],
+            Aceptable: [232, 248, 240]
+        };
+
+        autoTable(doc, {
+            startY: 130,
+            head: tableHeaders,
+            body: tableBody,
+            theme: 'grid',
+            headStyles: {
+                fillColor: [44, 74, 114], // #2c4a72
+                textColor: 255,
+                fontSize: 9,
+                fontStyle: 'bold',
+                halign: 'center',
+                valign: 'middle'
+            },
+            styles: {
+                fontSize: 8.5,
+                cellPadding: 4,
+                textColor: [28, 42, 56]
+            },
+            columnStyles: {
+                0: { cellWidth: 80, fontStyle: 'bold' },
+                1: { cellWidth: 90 },
+                2: { cellWidth: 110 },
+                3: { cellWidth: 50, halign: 'center', valign: 'middle' },
+                4: { cellWidth: 180 },
+                5: { cellWidth: 50, halign: 'center', valign: 'middle' },
+                6: { cellWidth: 80 }
+            },
+            didParseCell: function (data) {
+                // Pintar celdas de riesgo según su nivel de texto
+                if (data.section === 'body' && (data.column.index === 3 || data.column.index === 5)) {
+                    const text = data.cell.raw;
+                    if (text.includes('Substancial')) data.cell.styles.fillColor = nivelBgColor.Substancial;
+                    else if (text.includes('Moderado')) data.cell.styles.fillColor = nivelBgColor.Moderado;
+                    else if (text.includes('Aceptable')) data.cell.styles.fillColor = nivelBgColor.Aceptable;
+                }
+            }
+        });
+
+        // Pie de Página
+        const finalY = doc.lastAutoTable.finalY || 130;
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text("Metodología: P × C = MR | Aceptable ≤ 14 | Moderado 15–24 | Substancial ≥ 25", 40, finalY + 20);
+        doc.text("Generado por Wirin Ambiental QHSE App", doc.internal.pageSize.width - 200, finalY + 20);
+
+        // Descargar Documento
+        doc.save(`Matriz_IPER_${iperData.proyecto.replace(/[^a-zA-Z0-9]/g, "_")}.pdf`);
+    };
+
+    // ── Render Form + Vista Previa Estática ──────────────────────────────────
     return (
         <div style={{ fontFamily: "'Segoe UI', Arial, sans-serif", fontSize: 13, color: "#1c2a38", display: "flex", flexDirection: "column", height: "100%" }}>
             <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
 
-                {/* ============ LEFT PANEL: Formulario de Configuración ============ */}
+                {/* ============ LEFT PANEL: Formulario ============ */}
                 <div style={{
                     width: "350px",
                     minWidth: "300px",
@@ -157,7 +295,7 @@ export default function IPERModule() {
                             ⚠️ Matriz IPER
                         </h2>
                         <p style={{ color: "#6b7280", fontSize: 11, margin: 0 }}>
-                            Configuración de Variables Generales
+                            Definición de Variables Proyecto
                         </p>
                     </div>
 
@@ -201,13 +339,34 @@ export default function IPERModule() {
                     </div>
 
                     <div style={{ marginTop: "30px", padding: "16px", background: "#f0f4f8", borderRadius: "8px", border: "1px dashed #cbd5e1" }}>
-                        <p style={{ fontSize: "11px", color: "#64748b", margin: 0, lineHeight: 1.5 }}>
-                            <strong>Nota:</strong> Esta plantilla contiene riesgos precargados (Desplazamiento, Conducción vehicular, Radiación UV, Trabajo en solitario). Para generar el PDF local en HTML pulse el botón <strong>Exportar HTML</strong> en la vista previa.
+                        <p style={{ fontSize: "11px", color: "#64748b", margin: 0, lineHeight: 1.5, marginBottom: "12px" }}>
+                            <strong>Módulo Plantilla:</strong> Esta matriz IPER contiene data estática pre-aprobada por experto prevención DS44. Haga clic en el botón debajo para generar un PDF local.
+                        </p>
+
+                        {/* BOTÓN DE DESCARGA PDF NATIVA LOCAL */}
+                        <button
+                            onClick={descargarPDFLocal}
+                            style={{
+                                width: "100%", background: "#e8a020", color: "#fff", border: "none",
+                                borderRadius: 6, padding: "12px 16px", fontSize: 13,
+                                fontWeight: 800, cursor: "pointer", boxShadow: "0 4px 12px rgba(232,160,32,0.3)",
+                                transition: "transform 0.1s, background 0.2s"
+                            }}
+                            onMouseOver={e => e.currentTarget.style.background = "#d38e14"}
+                            onMouseOut={e => e.currentTarget.style.background = "#e8a020"}
+                            onMouseDown={e => e.currentTarget.style.transform = "scale(0.97)"}
+                            onMouseUp={e => e.currentTarget.style.transform = "scale(1)"}
+                        >
+                            <span style={{ fontSize: "16px", marginRight: "6px", verticalAlign: "middle" }}>⬇</span>
+                            EXPORTAR PDF (IPER)
+                        </button>
+                        <p style={{ fontSize: 9, textAlign: "center", color: "#94a3b8", marginTop: 8 }}>
+                            Exportación aislada (jsPDF nativo)
                         </p>
                     </div>
                 </div>
 
-                {/* ============ RIGHT PANEL: Vista Previa IPER ============ */}
+                {/* ============ RIGHT PANEL: Vista Previa IPER Estática ============ */}
                 <div style={{ flex: 1, padding: "24px", overflowY: "auto", background: "#e8eee8" }}>
 
                     {/* Header Dashboard IPER */}
@@ -219,7 +378,7 @@ export default function IPERModule() {
                     }}>
                         <div>
                             <h2 style={{ color: "#fff", margin: "0 0 2px", fontSize: 18, fontWeight: 800 }}>
-                                📑 Vista Previa: Matriz {iperData.proyecto}
+                                📑 Matriz Prevención DS 44: {iperData.proyecto}
                             </h2>
                             <p style={{ color: "#b0c4de", fontSize: 11, margin: 0 }}>
                                 {iperData.mandante && `Mandante: ${iperData.mandante} · `}
@@ -240,23 +399,10 @@ export default function IPERModule() {
                                     return result;
                                 }, [])}
                             </div>
-                            <button
-                                onClick={exportarHTML}
-                                style={{
-                                    background: "#e8a020", color: "#fff", border: "none",
-                                    borderRadius: 6, padding: "8px 16px", fontSize: 12,
-                                    fontWeight: 800, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-                                    transition: "transform 0.1s"
-                                }}
-                                onMouseDown={e => e.currentTarget.style.transform = "scale(0.96)"}
-                                onMouseUp={e => e.currentTarget.style.transform = "scale(1)"}
-                            >
-                                ⬇ Exportar HTML
-                            </button>
                         </div>
                     </div>
 
-                    {/* Tabla IPER */}
+                    {/* Tabla IPER Visual */}
                     <div ref={tableRef} style={{ background: "white", overflowX: "auto", borderRadius: "0 0 10px 10px", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
                         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10.5, minWidth: 900 }}>
                             <thead>
@@ -282,7 +428,7 @@ export default function IPERModule() {
                                                 padding: "10px 8px", border: "1px solid #e2e8f0",
                                                 fontWeight: 700, fontSize: 10, textTransform: "uppercase",
                                                 color: "#0f172a", borderLeft: "4px solid #e8a020",
-                                                verticalAlign: "top", minWidth: 120,
+                                                verticalAlign: "top", minWidth: 120, whiteSpace: "pre-line"
                                             }}>{fila.actividad}</td>
 
                                             {/* Peligro */}
@@ -344,20 +490,22 @@ export default function IPERModule() {
                         </table>
 
                         {/* Footer stats in Table */}
-                        <div style={{ padding: "12px", background: "#f1f5f9", borderTop: "1px solid #e2e8f0", display: "flex", gap: 10, flexWrap: "wrap" }}>
-                            {["Substancial", "Moderado", "Aceptable"].map(nivel => {
-                                const count = iperData.filas?.filter(f => f.riesgo_puro?.nivel === nivel).length || 0;
-                                const col = NIVEL_COLORS[nivel];
-                                return count > 0 ? (
-                                    <div key={nivel} style={{
-                                        background: col.bg, border: `1px solid ${col.border}`,
-                                        borderRadius: 6, padding: "5px 12px",
-                                        fontSize: 10, color: col.text, fontWeight: 700,
-                                    }}>
-                                        {nivel}: {count} riesgo{count !== 1 ? "s" : ""} puro{count !== 1 ? "s" : ""}
-                                    </div>
-                                ) : null;
-                            })}
+                        <div style={{ padding: "12px", background: "#eef2f6", borderTop: "1px solid #cbd5e1", display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "space-between" }}>
+                            <div style={{ display: "flex", gap: "10px" }}>
+                                {["Substancial", "Moderado", "Aceptable"].map(nivel => {
+                                    const count = iperData.filas?.filter(f => f.riesgo_puro?.nivel === nivel).length || 0;
+                                    const col = NIVEL_COLORS[nivel];
+                                    return count > 0 ? (
+                                        <div key={nivel} style={{
+                                            background: col.bg, border: `1px solid ${col.border}`,
+                                            borderRadius: 6, padding: "5px 12px",
+                                            fontSize: 10, color: col.text, fontWeight: 700,
+                                        }}>
+                                            {nivel}: {count} riesgo{count !== 1 ? "s" : ""} puro{count !== 1 ? "s" : ""}
+                                        </div>
+                                    ) : null;
+                                })}
+                            </div>
                             <div style={{
                                 background: "#e8f8f0", border: "1px solid #2ecc71",
                                 borderRadius: 6, padding: "5px 12px",
@@ -389,59 +537,3 @@ const inputStyle = {
     background: "#fff",
     boxShadow: "inset 0 1px 2px rgba(0,0,0,0.02)"
 };
-
-// ─── HTML de exportación ─────────────────────────────────────────────────────
-function buildExportHTML(data) {
-    const rows = data.filas?.map(f => {
-        const nivelPuro = { Substancial: "#c0392b", Moderado: "#e67e22", Aceptable: "#27ae60" };
-        const tipoBg = { "Ingeniería": "#2980b9", "Administración": "#8e44ad", "EPP": "#16a085", "Eliminación": "#c0392b", "Sustitución": "#d35400" };
-        const bgPuro = { Substancial: "#fde8e8", Moderado: "#fef3e2", Aceptable: "#e8f8f0" };
-
-        const controles = (f.controles || []).map(c => `
-      <div style="display:flex;gap:5px;align-items:flex-start;margin-bottom:4px;">
-        <span style="background:${tipoBg[c.tipo] || "#555"};color:#fff;border-radius:3px;padding:1px 5px;font-size:8.5px;font-weight:700;white-space:nowrap;">${c.tipo.slice(0, 4).toUpperCase()}</span>
-        <span style="font-size:10px;line-height:1.5;">${c.medida}</span>
-      </div>`).join("");
-
-        const legal = (f.legal || []).map(l => `<li style="padding:2px 0;font-size:9.5px;border-bottom:1px dashed #dde5f0;">${l}</li>`).join("");
-
-        const riskCell = (r) => r ? `
-      <div style="text-align:center;">
-        <div style="font-size:10px;color:#666;">P:<b>${r.p}</b> × C:<b>${r.c}</b></div>
-        <div style="font-size:20px;font-weight:900;color:${nivelPuro[r.nivel] || "#27ae60"}">${r.mr}</div>
-        <span style="background:${nivelPuro[r.nivel] || "#27ae60"};color:#fff;border-radius:20px;padding:2px 9px;font-size:9px;font-weight:700;">${r.nivel}</span>
-      </div>` : "";
-
-        return `<tr style="background:${Math.random() > 0.5 ? "#f7f9fc" : "#fff"}">
-      <td style="padding:8px;border:1px solid #c8d6e5;font-weight:700;font-size:10px;text-transform:uppercase;color:#1a2e4a;border-left:4px solid #e8a020;vertical-align:top;">${f.actividad}</td>
-      <td style="padding:8px;border:1px solid #c8d6e5;vertical-align:top;font-size:10.5px;">${f.peligro}</td>
-      <td style="padding:8px;border:1px solid #c8d6e5;vertical-align:top;font-size:10.5px;">${f.riesgo}</td>
-      <td style="padding:8px;border:1px solid #c8d6e5;vertical-align:middle;background:${bgPuro[f.riesgo_puro?.nivel] || "#e8f8f0"};">${riskCell(f.riesgo_puro)}</td>
-      <td style="padding:8px;border:1px solid #c8d6e5;vertical-align:top;">${controles}</td>
-      <td style="padding:8px;border:1px solid #c8d6e5;vertical-align:middle;background:${bgPuro[f.riesgo_residual?.nivel] || "#e8f8f0"};">${riskCell(f.riesgo_residual)}</td>
-      <td style="padding:8px;border:1px solid #c8d6e5;vertical-align:top;"><ul style="margin:0;padding:0;list-style:none;">${legal}</ul></td>
-    </tr>`;
-    }).join("");
-
-    return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
-<title>Matriz IPER — ${data.proyecto}</title>
-<style>body{font-family:'Segoe UI',Arial,sans-serif;font-size:11px;padding:20px;color:#1c2a38;} table{width:100%;border-collapse:collapse;} th{background:#2c4a72;color:#fff;padding:9px 8px;font-size:9.5px;font-weight:700;text-transform:uppercase;border:1px solid rgba(255,255,255,0.2);} @media print{body{padding:0;}}</style>
-</head><body>
-<div style="background:linear-gradient(135deg,#1a2e4a,#2c4a72);color:#fff;padding:18px 22px;border-radius:8px;margin-bottom:16px;">
-  <div style="font-size:10px;color:#e8a020;font-weight:700;letter-spacing:2px;">DS 44 · GESTIÓN PREVENTIVA DE RIESGOS LABORALES</div>
-  <h1 style="font-size:18px;margin:4px 0 2px;">⚠️ Matriz IPER — ${data.proyecto}</h1>
-  <p style="color:#b0c4de;font-size:11px;margin:0;">Generada: ${data.fecha} · Mandante: ${data.mandante || 'N/A'} · Ubicación: ${data.ubicacion || 'N/A'}</p>
-</div>
-<table>
-<thead><tr>
-  <th>① Actividad</th><th>② Peligro</th><th>③ Riesgo / Incidente</th>
-  <th>④ Riesgo Puro P×C=MR</th><th>⑤ Controles DS 44</th>
-  <th>⑥ Riesgo Residual P×C=MR</th><th>⑦ Requisitos Legales</th>
-</tr></thead>
-<tbody>${rows}</tbody>
-</table>
-<div style="margin-top:10px;font-size:9.5px;color:#666;border-top:1px solid #dde;padding-top:8px;">
-  Aceptable ≤ 14 &nbsp;|&nbsp; Moderado 15–24 &nbsp;|&nbsp; Substancial ≥ 25 &nbsp;|&nbsp; Generado por Wirin Ambiental QHSE App
-</div>
-</body></html>`;
-}
