@@ -28,8 +28,9 @@ const ComChecklistPreview = dynamic(() => import("./components/previews/ComCheck
 const ODIPreview = dynamic(() => import("./components/previews/ODIPreview"), { ssr: false });
 const PREPreview = dynamic(() => import("./components/previews/PREPreview"), { ssr: false });
 const InvestigacionPreview = dynamic(() => import("./components/previews/InvestigacionPreview"), { ssr: false });
+import { useRouter } from "next/navigation";
 
-type Template = "sgsst" | "pts" | "epp" | "ppr" | "ast" | "vehiculo" | "charla" | "comunicacion" | "odi" | "pre" | "investigacion";
+type Template = "sgsst" | "pts" | "epp" | "ppr" | "ast" | "vehiculo" | "charla" | "comunicacion" | "odi" | "pre" | "investigacion" | "iper";
 
 const templates = [
   { id: "sgsst" as Template, label: "SGSST", icon: "📋", desc: "Manual SGSST", color: "#2E7D32" },
@@ -43,6 +44,7 @@ const templates = [
   { id: "odi" as Template, label: "ODI", icon: "📝", desc: "Derecho a Saber", color: "#795548" },
   { id: "pre" as Template, label: "PRE & MEDEVAC", icon: "🚑", desc: "Plan Emergencias", color: "#e11d48" },
   { id: "investigacion" as Template, label: "Investigación", icon: "🔍", desc: "Incidentes 6M", color: "#9333ea" },
+  { id: "iper" as Template, label: "IPER", icon: "⚠️", desc: "Matriz Riesgos", color: "#e8a020", href: "/iper" },
 ];
 
 const today = new Date().toISOString().split("T")[0];
@@ -173,6 +175,7 @@ const defaultInvestigacion: InvestigacionData = {
 };
 
 export default function HomePage() {
+  const router = useRouter();
   const [activeTemplate, setActiveTemplate] = useState<Template>("sgsst");
   const [sgsst, setSgsst] = useState<SGSSTData>(defaultSGSST);
   const [pts, setPts] = useState<PTSData>(defaultPTS);
@@ -260,7 +263,13 @@ export default function HomePage() {
               {templates.map((t) => (
                 <button
                   key={t.id}
-                  onClick={() => setActiveTemplate(t.id)}
+                  onClick={() => {
+                    if (t.href) {
+                      router.push(t.href);
+                    } else {
+                      setActiveTemplate(t.id);
+                    }
+                  }}
                   style={{
                     flex: "1 1 50px",
                     maxWidth: "68px",
