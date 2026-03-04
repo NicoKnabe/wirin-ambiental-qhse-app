@@ -180,14 +180,49 @@ export default function IPERPreview({ data }: IPERPreviewProps) {
                     </table>
                 </div>
 
-                <div style={{ padding: "6px", background: "#eef2f6", border: "1px solid #cbd5e1", borderTop: "none", display: "flex", justifyContent: "space-between", borderRadius: "0 0 4px 4px" }}>
+                <div style={{ padding: "6px", background: "#eef2f6", border: "1px solid #cbd5e1", borderTop: "none", display: "flex", justifyContent: "space-between", borderRadius: "0 0 4px 4px", marginBottom: "20px" }}>
                     <div style={{ fontSize: "6pt", color: "#64748b" }}>
                         Metodología: P × C = MR | Aceptable ≤ 14 | Moderado 15–24 | Substancial ≥ 25
                     </div>
                 </div>
 
+                {/* ─── TABLA DE CRITERIOS DE VALORIZACIÓN ─── */}
+                <div style={{ marginTop: "10px", pageBreakInside: "avoid" }}>
+                    <div style={{ fontSize: "8pt", fontWeight: "bold", color: "#2c4a72", marginBottom: "8px" }}>
+                        CRITERIOS DE VALORIZACIÓN (P × C = MR)
+                    </div>
+                    <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed", border: "1px solid #c8d6e5" }}>
+                        <thead>
+                            <tr>
+                                {['PROBABILIDAD (P)', 'CONSECUENCIA (C)', 'MAGNITUD DEL RIESGO (MR)'].map((h, i) => (
+                                    <th key={i} style={{
+                                        background: "#2c4a72", color: "#ffffff", padding: "6px 4px",
+                                        textAlign: "center", verticalAlign: "middle", fontSize: "7.5pt", fontWeight: 800,
+                                        border: "1px solid #c8d6e5", width: i === 0 ? "28%" : i === 1 ? "36%" : "36%"
+                                    }}>{h}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style={{ padding: "8px 6px", border: "1px solid #c8d6e5", verticalAlign: "top", textAlign: "center", fontSize: "7pt", color: "#334155", lineHeight: 1.5 }}>
+                                    Baja (4)<br />Media (8)<br />Alta (12)
+                                </td>
+                                <td style={{ padding: "8px 6px", border: "1px solid #c8d6e5", verticalAlign: "top", textAlign: "center", fontSize: "7pt", color: "#334155", lineHeight: 1.5 }}>
+                                    Ligeramente Dañino (1)<br />Dañino (2)<br />Extremadamente Dañino (3)
+                                </td>
+                                <td style={{ padding: "8px 6px", border: "1px solid #c8d6e5", verticalAlign: "top", textAlign: "center", fontSize: "7pt", color: "#334155", lineHeight: 1.5 }}>
+                                    <div style={{ color: "#27ae60", fontWeight: "bold" }}>ACEPTABLE (≤ 14)</div>
+                                    <div style={{ color: "#e67e22", fontWeight: "bold", margin: "2px 0" }}>MODERADO (15 - 24)</div>
+                                    <div style={{ color: "#c0392b", fontWeight: "bold" }}>SUBSTANCIAL (≥ 25)</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
                 {/* Footer */}
-                <div style={{ marginTop: '20px' }}>
+                <div style={{ marginTop: '30px' }}>
                     <div className="pdf-footer">
                         <span>Wirin Ambiental</span>
                         <span>{CODE} | v{version} | {docDate}</span>
