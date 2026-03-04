@@ -3,7 +3,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 // ─── DATA ESTÁTICA POR DEFECTO (PLANTILLA BASE HTML MATRIZ_IPER_DS44) ────────
-const MATRIZ_BASE = {
+export const MATRIZ_BASE = {
     filas: [
         {
             actividad: "Desplazamiento Pedestre\n(Recorrido)",
