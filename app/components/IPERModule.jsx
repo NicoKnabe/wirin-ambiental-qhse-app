@@ -75,7 +75,7 @@ export const MATRIZ_BASE = {
                 { tipo: "EPP", medida: "Guantes de cuero o nitrilo reforzados; mascarilla FFP2 en manipulación de trampas; repelente de insectos DEET ≥ 20%; polaina y ropa de manga larga; revisión de garrapatas post-actividad." }
             ],
             riesgo_residual: { p: 4, c: 2, mr: 8, nivel: "Aceptable" },
-            legal: ["Ley 16.744", "DS 594 Párrafo III (Agentes Biológicos)", "DS 44 Art. 14 (Riesgos Biológicos)", "Circ. N°3.243 SUSESO"]
+            legal: ["Ley 16.744", "DS 594 Párrafo III (Agentes Biológicos)", "DS 44 Art. 14", "Protocolos MINSAL Zoonosis"]
         },
         {
             actividad: "Monitoreo Nocturno",
