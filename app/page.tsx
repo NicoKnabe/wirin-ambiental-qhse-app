@@ -266,16 +266,16 @@ export default function HomePage() {
           transition: "width 0.3s ease",
         }}>
           {/* Template Tabs */}
-          <div style={{ padding: "12px 16px 0", background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
-            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px", marginBottom: "0" }}>
+          <div style={{ padding: "8px 16px 0", background: "#f9fafb", borderBottom: "1px solid #e5e7eb", marginBottom: "8px" }}>
+            <div className="flex flex-row flex-nowrap overflow-x-auto gap-2 pb-2 scrollbar-hide w-full items-start">
               {templates.map((t) => (
                 <button
                   key={t.id}
+                  className="flex-shrink-0"
                   onClick={() => setActiveTemplate(t.id)}
                   style={{
-                    flex: "1 1 50px",
-                    maxWidth: "68px",
-                    padding: "8px 4px",
+                    width: "64px",
+                    padding: "6px 2px",
                     borderRadius: "8px 8px 0 0",
                     border: "none",
                     cursor: "pointer",
