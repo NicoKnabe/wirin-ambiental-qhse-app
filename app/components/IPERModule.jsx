@@ -167,6 +167,24 @@ export default function IPERModule() {
         filas: MATRIZ_BASE.filas
     };
 
+    // === LÓGICA DE AGRUPACIÓN (ROWSPAN) ===
+    const filasAgrupadas = iperData.filas.map((fila, index, array) => {
+        let isFirstOfGroup = false;
+        let rowSpanCount = 1;
+
+        if (index === 0 || fila.actividad !== array[index - 1].actividad) {
+            isFirstOfGroup = true;
+            for (let i = index + 1; i < array.length; i++) {
+                if (array[i].actividad === fila.actividad) {
+                    rowSpanCount++;
+                } else {
+                    break;
+                }
+            }
+        }
+        return { ...fila, isFirstOfGroup, rowSpanCount };
+    });
+
     const tableRef = useRef(null);
 
     // ── MOTOR PDF LOCAL TOTALMENTE AISLADO ──────────────────────────────────
@@ -197,7 +215,7 @@ export default function IPERModule() {
             ["Actividad\n(Proceso)", "Peligro", "Riesgo / Incidente", "Puro\nP×C=MR", "Controles DS 44", "Residual\nP×C=MR", "Requisitos Legales"]
         ];
 
-        const tableBody = iperData.filas.map((f, i) => {
+        const tableBody = filasAgrupadas.map((f, i) => {
             // Controles formateados textualmente
             const controlesText = f.controles.map(c => `[${c.tipo.slice(0, 3).toUpperCase()}] ${c.medida}`).join("\n\n");
             const legalText = f.legal.join("\n");
@@ -205,8 +223,7 @@ export default function IPERModule() {
             const puroText = `P: ${f.riesgo_puro.p} x C: ${f.riesgo_puro.c}\n\nMR: ${f.riesgo_puro.mr}\n${f.riesgo_puro.nivel}`;
             const residualText = `P: ${f.riesgo_residual.p} x C: ${f.riesgo_residual.c}\n\nMR: ${f.riesgo_residual.mr}\n${f.riesgo_residual.nivel}`;
 
-            return [
-                f.actividad,
+            const row = [
                 f.peligro,
                 f.riesgo,
                 puroText,
@@ -214,6 +231,12 @@ export default function IPERModule() {
                 residualText,
                 legalText
             ];
+
+            if (f.isFirstOfGroup) {
+                row.unshift({ content: f.actividad, rowSpan: f.rowSpanCount, styles: { valign: 'middle' } });
+            }
+
+            return row;
         });
 
         // Mapeo de colores estáticos para AutoTable
@@ -404,7 +427,7 @@ export default function IPERModule() {
 
                     {/* Tabla IPER Visual */}
                     <div ref={tableRef} style={{ background: "white", overflowX: "auto", borderRadius: "0 0 10px 10px", boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
-                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10.5, minWidth: 900 }}>
+                        <table id="tabla-iper" style={{ width: "100%", borderCollapse: "collapse", fontSize: 10.5, minWidth: 900 }}>
                             <thead>
                                 <tr>
                                     {["① Actividad", "② Peligro", "③ Riesgo / Incidente", "④ Riesgo Puro\nP×C=MR", "⑤ Controles DS 44", "⑥ Riesgo Residual\nP×C=MR", "⑦ Requisitos Legales"].map(h => (
@@ -419,17 +442,19 @@ export default function IPERModule() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {iperData.filas?.map((fila, i) => {
+                                {filasAgrupadas.map((fila, i) => {
                                     const nivelPuro = NIVEL_COLORS[fila.riesgo_puro?.nivel] || NIVEL_COLORS.Aceptable;
                                     return (
                                         <tr key={i} style={{ background: i % 2 === 0 ? "#f8fafc" : "#fff" }}>
                                             {/* Actividad */}
-                                            <td style={{
-                                                padding: "10px 8px", border: "1px solid #e2e8f0",
-                                                fontWeight: 700, fontSize: 10, textTransform: "uppercase",
-                                                color: "#0f172a", borderLeft: "4px solid #e8a020",
-                                                verticalAlign: "top", minWidth: 120, whiteSpace: "pre-line"
-                                            }}>{fila.actividad}</td>
+                                            {fila.isFirstOfGroup && (
+                                                <td rowSpan={fila.rowSpanCount} style={{
+                                                    padding: "10px 8px", border: "1px solid #e2e8f0",
+                                                    fontWeight: 700, fontSize: 10, textTransform: "uppercase",
+                                                    color: "#0f172a", borderLeft: "4px solid #e8a020",
+                                                    verticalAlign: "middle", minWidth: 120, whiteSpace: "pre-line"
+                                                }}>{fila.actividad}</td>
+                                            )}
 
                                             {/* Peligro */}
                                             <td style={{ padding: "10px 8px", border: "1px solid #e2e8f0", verticalAlign: "top", minWidth: 140 }}>
@@ -493,7 +518,7 @@ export default function IPERModule() {
                         <div style={{ padding: "12px", background: "#eef2f6", borderTop: "1px solid #cbd5e1", display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "space-between" }}>
                             <div style={{ display: "flex", gap: "10px" }}>
                                 {["Substancial", "Moderado", "Aceptable"].map(nivel => {
-                                    const count = iperData.filas?.filter(f => f.riesgo_puro?.nivel === nivel).length || 0;
+                                    const count = filasAgrupadas.filter(f => f.riesgo_puro?.nivel === nivel).length || 0;
                                     const col = NIVEL_COLORS[nivel];
                                     return count > 0 ? (
                                         <div key={nivel} style={{
@@ -511,7 +536,7 @@ export default function IPERModule() {
                                 borderRadius: 6, padding: "5px 12px",
                                 fontSize: 10, color: "#27ae60", fontWeight: 700,
                             }}>
-                                ✓ {iperData.filas?.filter(f => f.riesgo_residual?.nivel === "Aceptable").length || 0} riesgos residuales Aceptables
+                                ✓ {filasAgrupadas.filter(f => f.riesgo_residual?.nivel === "Aceptable").length || 0} riesgos residuales Aceptables
                             </div>
                         </div>
                     </div>
