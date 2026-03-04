@@ -28,7 +28,7 @@ const ComChecklistPreview = dynamic(() => import("./components/previews/ComCheck
 const ODIPreview = dynamic(() => import("./components/previews/ODIPreview"), { ssr: false });
 const PREPreview = dynamic(() => import("./components/previews/PREPreview"), { ssr: false });
 const InvestigacionPreview = dynamic(() => import("./components/previews/InvestigacionPreview"), { ssr: false });
-import { useRouter } from "next/navigation";
+import IPERModule from "./components/IPERModule";
 
 type Template = "sgsst" | "pts" | "epp" | "ppr" | "ast" | "vehiculo" | "charla" | "comunicacion" | "odi" | "pre" | "investigacion" | "iper";
 
@@ -44,7 +44,7 @@ const templates = [
   { id: "odi" as Template, label: "ODI", icon: "📝", desc: "Derecho a Saber", color: "#795548" },
   { id: "pre" as Template, label: "PRE & MEDEVAC", icon: "🚑", desc: "Plan Emergencias", color: "#e11d48" },
   { id: "investigacion" as Template, label: "Investigación", icon: "🔍", desc: "Incidentes 6M", color: "#9333ea" },
-  { id: "iper" as Template, label: "IPER", icon: "⚠️", desc: "Matriz Riesgos", color: "#e8a020", href: "/iper" },
+  { id: "iper" as Template, label: "IPER", icon: "⚠️", desc: "Matriz Riesgos", color: "#e8a020" },
 ];
 
 const today = new Date().toISOString().split("T")[0];
@@ -175,7 +175,6 @@ const defaultInvestigacion: InvestigacionData = {
 };
 
 export default function HomePage() {
-  const router = useRouter();
   const [activeTemplate, setActiveTemplate] = useState<Template>("sgsst");
   const [sgsst, setSgsst] = useState<SGSSTData>(defaultSGSST);
   const [pts, setPts] = useState<PTSData>(defaultPTS);
@@ -245,9 +244,9 @@ export default function HomePage() {
       {/* ===== BODY: split screen ===== */}
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
 
-        {/* ============ LEFT PANEL: Form (no-print) ============ */}
+        {/* ============ LEFT PANEL: Sidebar Form or Full Width Selector ============ */}
         <div className="no-print overflow-x-hidden" style={{
-          width: "380px",
+          width: activeTemplate === "iper" ? "100%" : "380px",
           minWidth: "340px",
           background: "white",
           display: "flex",
@@ -263,13 +262,7 @@ export default function HomePage() {
               {templates.map((t) => (
                 <button
                   key={t.id}
-                  onClick={() => {
-                    if (t.href) {
-                      router.push(t.href);
-                    } else {
-                      setActiveTemplate(t.id);
-                    }
-                  }}
+                  onClick={() => setActiveTemplate(t.id)}
                   style={{
                     flex: "1 1 50px",
                     maxWidth: "68px",
@@ -310,90 +303,98 @@ export default function HomePage() {
             {activeTemplate === "odi" && <ODIForm data={odi} onChange={setOdi} />}
             {activeTemplate === "pre" && <PREForm data={pre} onChange={setPre} />}
             {activeTemplate === "investigacion" && <InvestigacionForm data={investigacion} onChange={setInvestigacion} />}
+            {activeTemplate === "iper" && (
+              <div style={{ padding: "0" }}>
+                <IPERModule />
+              </div>
+            )}
           </div>
 
           {/* Bottom action area */}
-          <div style={{ borderTop: "1px solid #e5e7eb", background: "#f9fafb", flexShrink: 0 }}>
-            {/* PDF Export */}
-            <div style={{ padding: "14px 16px 12px" }}>
-              <button
-                className="btn-export"
-                onClick={handleDownloadPDF}
-                style={{ opacity: 1, cursor: "pointer" }}
-              >
-                <>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" /></svg>
-                  Exportar PDF Oficial
-                </>
-              </button>
-              <div style={{ marginTop: "8px", textAlign: "center" }}>
-                <span style={{ fontSize: "10px", color: "#9ca3af" }}>
-                  {templates.find(t => t.id === activeTemplate)?.icon}&nbsp;
-                  {templates.find(t => t.id === activeTemplate)?.label}&nbsp;·&nbsp;Carta (Letter)
-                </span>
+          {activeTemplate !== "iper" && (
+            <div style={{ borderTop: "1px solid #e5e7eb", background: "#f9fafb", flexShrink: 0 }}>
+              {/* PDF Export */}
+              <div style={{ padding: "14px 16px 12px" }}>
+                <button
+                  className="btn-export"
+                  onClick={handleDownloadPDF}
+                  style={{ opacity: 1, cursor: "pointer" }}
+                >
+                  <>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" /></svg>
+                    Exportar PDF Oficial
+                  </>
+                </button>
+                <div style={{ marginTop: "8px", textAlign: "center" }}>
+                  <span style={{ fontSize: "10px", color: "#9ca3af" }}>
+                    {templates.find(t => t.id === activeTemplate)?.icon}&nbsp;
+                    {templates.find(t => t.id === activeTemplate)?.label}&nbsp;·&nbsp;Carta (Letter)
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* ============ RIGHT PANEL: Scrollable preview column ============ */}
-        <div
-          className="h-screen overflow-y-auto pb-32 print:block print:overflow-visible print:p-0 print:bg-white print:h-auto"
-          style={{
-            flex: 1,
-            background: "#e8eee8",
-            padding: "24px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          {/* Preview Header Bar — screen only */}
-          <div className="hide-on-print" style={{
-            width: "816px",
-            maxWidth: "100%",
-            background: "white",
-            borderRadius: "8px 8px 0 0",
-            padding: "10px 16px",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            marginBottom: "0",
-            borderBottom: "2px solid #4CAF50",
-          }}>
-            <div style={{ display: "flex", gap: "6px" }}>
-              {["#ff5f57", "#ffbd3e", "#29c840"].map((c) => (
-                <div key={c} style={{ width: "12px", height: "12px", borderRadius: "50%", background: c }} />
-              ))}
-            </div>
-            <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "12px", color: "#6b7280", letterSpacing: "0.05em" }}>
-                👁 VISTA PREVIA EN TIEMPO REAL
-              </span>
-              <span style={{
-                background: "#e8f5e9",
-                color: "#1B5E20",
-                fontSize: "10px",
-                fontWeight: 700,
-                padding: "2px 8px",
-                borderRadius: "10px",
-                border: "1px solid #c8e6c9",
-              }}>
-                {templates.find(t => t.id === activeTemplate)?.label} — PDF Carta
-              </span>
-            </div>
-            <div style={{ fontSize: "10px", color: "#9ca3af" }}>816 × 1056 px</div>
-          </div>
-
-          {/* ★ THE PAPER — This div will be cloned by react-to-print */}
+        {activeTemplate !== "iper" && (
           <div
-            ref={contentRef}
-            className="print-page-wrapper"
-            style={{ width: "816px", maxWidth: "100%", background: "white", position: "relative" }}
+            className="h-screen overflow-y-auto pb-32 print:block print:overflow-visible print:p-0 print:bg-white print:h-auto"
+            style={{
+              flex: 1,
+              background: "#e8eee8",
+              padding: "24px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            {/* INYECCIÓN MAESTRA: Forzamos el tamaño exacto del papel según el contenido */}
-            <style type="text/css" media="print">{`
+            {/* Preview Header Bar — screen only */}
+            <div className="hide-on-print" style={{
+              width: "816px",
+              maxWidth: "100%",
+              background: "white",
+              borderRadius: "8px 8px 0 0",
+              padding: "10px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              marginBottom: "0",
+              borderBottom: "2px solid #4CAF50",
+            }}>
+              <div style={{ display: "flex", gap: "6px" }}>
+                {["#ff5f57", "#ffbd3e", "#29c840"].map((c) => (
+                  <div key={c} style={{ width: "12px", height: "12px", borderRadius: "50%", background: c }} />
+                ))}
+              </div>
+              <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontSize: "12px", color: "#6b7280", letterSpacing: "0.05em" }}>
+                  👁 VISTA PREVIA EN TIEMPO REAL
+                </span>
+                <span style={{
+                  background: "#e8f5e9",
+                  color: "#1B5E20",
+                  fontSize: "10px",
+                  fontWeight: 700,
+                  padding: "2px 8px",
+                  borderRadius: "10px",
+                  border: "1px solid #c8e6c9",
+                }}>
+                  {templates.find(t => t.id === activeTemplate)?.label} — PDF Carta
+                </span>
+              </div>
+              <div style={{ fontSize: "10px", color: "#9ca3af" }}>816 × 1056 px</div>
+            </div>
+
+            {/* ★ THE PAPER — This div will be cloned by react-to-print */}
+            <div
+              ref={contentRef}
+              className="print-page-wrapper"
+              style={{ width: "816px", maxWidth: "100%", background: "white", position: "relative" }}
+            >
+              {/* INYECCIÓN MAESTRA: Forzamos el tamaño exacto del papel según el contenido */}
+              <style type="text/css" media="print">{`
               @page {
                 size: 816px ${docHeight}px !important;
                 margin: 0 !important;
@@ -405,19 +406,20 @@ export default function HomePage() {
               }
             `}</style>
 
-            {activeTemplate === "sgsst" && <SGSSTPreview data={sgsst} />}
-            {activeTemplate === "pts" && <PTSPreview data={pts} />}
-            {activeTemplate === "epp" && <EPPPreview data={epp} />}
-            {activeTemplate === "ppr" && <PPRPreview data={ppr} />}
-            {activeTemplate === "ast" && <ASTPreview data={ast} />}
-            {activeTemplate === "vehiculo" && <VehiculoPreview data={vehiculo} />}
-            {activeTemplate === "charla" && <CharlaPreview data={charla} />}
-            {activeTemplate === "comunicacion" && <ComChecklistPreview data={comunicacion} />}
-            {activeTemplate === "odi" && <ODIPreview data={odi} />}
-            {activeTemplate === "pre" && <PREPreview data={pre} />}
-            {activeTemplate === "investigacion" && <InvestigacionPreview data={investigacion} />}
+              {activeTemplate === "sgsst" && <SGSSTPreview data={sgsst} />}
+              {activeTemplate === "pts" && <PTSPreview data={pts} />}
+              {activeTemplate === "epp" && <EPPPreview data={epp} />}
+              {activeTemplate === "ppr" && <PPRPreview data={ppr} />}
+              {activeTemplate === "ast" && <ASTPreview data={ast} />}
+              {activeTemplate === "vehiculo" && <VehiculoPreview data={vehiculo} />}
+              {activeTemplate === "charla" && <CharlaPreview data={charla} />}
+              {activeTemplate === "comunicacion" && <ComChecklistPreview data={comunicacion} />}
+              {activeTemplate === "odi" && <ODIPreview data={odi} />}
+              {activeTemplate === "pre" && <PREPreview data={pre} />}
+              {activeTemplate === "investigacion" && <InvestigacionPreview data={investigacion} />}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
