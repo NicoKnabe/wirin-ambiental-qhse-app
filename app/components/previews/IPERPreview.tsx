@@ -99,11 +99,11 @@ export default function IPERPreview({ data }: IPERPreviewProps) {
                             <tr>
                                 {["Actividad", "Peligro", "Riesgo / Incidente", "Puro", "Controles DS 44", "Residual", "Req. Legales"].map((h, i) => (
                                     <th key={h} style={{
-                                        background: "#e2e8f0", color: "#1e293b", padding: "6px 4px",
-                                        textAlign: "center", fontSize: "6.5pt", fontWeight: 800,
+                                        background: "#2c4a72", color: "#ffffff", padding: "8px 4px",
+                                        textAlign: "center", verticalAlign: "middle", fontSize: "7.5pt", fontWeight: 800,
                                         textTransform: "uppercase", letterSpacing: 0.2,
-                                        border: "1px solid #cbd5e1",
-                                        width: i === 0 ? "13%" : i === 1 ? "14%" : i === 2 ? "16%" : i === 3 ? "7%" : i === 4 ? "30%" : i === 5 ? "7%" : "13%"
+                                        border: "1px solid #c8d6e5",
+                                        width: i === 0 ? "9%" : i === 1 ? "11.5%" : i === 2 ? "11.5%" : i === 3 ? "7.2%" : i === 4 ? "44.6%" : i === 5 ? "7.2%" : "9%"
                                     }}>{h}</th>
                                 ))}
                             </tr>
@@ -112,55 +112,56 @@ export default function IPERPreview({ data }: IPERPreviewProps) {
                             {filasAgrupadas.map((fila, i) => {
                                 const nivelPuro = NIVEL_COLORS[fila.riesgo_puro?.nivel] || NIVEL_COLORS.Aceptable;
                                 return (
-                                    <tr key={i} style={{ background: i % 2 === 0 ? "#f8fafc" : "#fff", borderBottom: "1px solid #e2e8f0" }}>
+                                    <tr key={i} style={{ background: i % 2 === 0 ? "#f8fafc" : "#fff", borderBottom: "1px solid #c8d6e5" }}>
                                         {/* Actividad */}
                                         {fila.isFirstOfGroup && (
                                             <td rowSpan={fila.rowSpanCount} style={{
-                                                padding: "6px 4px", border: "1px solid #e2e8f0", borderLeft: "3px solid #e8a020",
-                                                fontWeight: 700, fontSize: "6.5pt", textTransform: "uppercase",
-                                                color: "#0f172a", verticalAlign: "middle", textAlign: "center"
+                                                padding: "8px 6px", border: "1px solid #c8d6e5", borderLeft: "3px solid #e8a020",
+                                                fontWeight: 700, fontSize: "7pt", textTransform: "uppercase",
+                                                color: "#0f172a", verticalAlign: "middle", textAlign: "center",
+                                                wordBreak: "break-word"
                                             }}>
                                                 {fila.actividad.replace("\n", " ")}
                                             </td>
                                         )}
 
                                         {/* Peligro */}
-                                        <td style={{ padding: "6px 4px", border: "1px solid #e2e8f0", verticalAlign: "top", fontSize: "6.5pt", color: "#334155" }}>
+                                        <td style={{ padding: "8px 6px", border: "1px solid #c8d6e5", verticalAlign: "middle", fontSize: "7pt", color: "#334155", wordBreak: "break-word" }}>
                                             {fila.peligro}
                                         </td>
 
                                         {/* Riesgo */}
-                                        <td style={{ padding: "6px 4px", border: "1px solid #e2e8f0", verticalAlign: "top", fontSize: "6.5pt", color: "#c0392b", fontWeight: 600 }}>
+                                        <td style={{ padding: "8px 6px", border: "1px solid #c8d6e5", verticalAlign: "middle", fontSize: "7pt", color: "#c0392b", fontWeight: 600, wordBreak: "break-word" }}>
                                             {fila.riesgo}
                                         </td>
 
                                         {/* Riesgo Puro */}
-                                        <td style={{ padding: "4px", border: "1px solid #e2e8f0", verticalAlign: "middle", background: nivelPuro.bg }}>
+                                        <td style={{ padding: "8px 4px", border: "1px solid #c8d6e5", verticalAlign: "middle", background: nivelPuro.bg }}>
                                             <NivelBadge {...fila.riesgo_puro} nivel={fila.riesgo_puro?.nivel} />
                                         </td>
 
                                         {/* Controles */}
-                                        <td style={{ padding: "6px 4px", border: "1px solid #e2e8f0", verticalAlign: "top" }}>
-                                            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                        <td style={{ padding: "8px 6px", border: "1px solid #c8d6e5", verticalAlign: "middle" }}>
+                                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                                                 {fila.controles?.map((ctrl: any, j: number) => (
-                                                    <div key={j} style={{ display: "flex", gap: 4, alignItems: "flex-start" }}>
+                                                    <div key={j} style={{ display: "flex", gap: 6, alignItems: "flex-start", wordBreak: "break-word" }}>
                                                         <CtrlTag tipo={ctrl.tipo} />
-                                                        <span style={{ fontSize: "6.5pt", lineHeight: 1.3, color: "#1e293b", textAlign: "justify" }}>{ctrl.medida}</span>
+                                                        <span style={{ fontSize: "7pt", lineHeight: 1.3, color: "#1e293b", textAlign: "left" }}>{ctrl.medida}</span>
                                                     </div>
                                                 ))}
                                             </div>
                                         </td>
 
                                         {/* Riesgo Residual */}
-                                        <td style={{ padding: "4px", border: "1px solid #e2e8f0", verticalAlign: "middle", background: (NIVEL_COLORS[fila.riesgo_residual?.nivel] || NIVEL_COLORS.Aceptable).bg }}>
+                                        <td style={{ padding: "8px 4px", border: "1px solid #c8d6e5", verticalAlign: "middle", background: (NIVEL_COLORS[fila.riesgo_residual?.nivel] || NIVEL_COLORS.Aceptable).bg }}>
                                             <NivelBadge {...fila.riesgo_residual} nivel={fila.riesgo_residual?.nivel} />
                                         </td>
 
                                         {/* Legal */}
-                                        <td style={{ padding: "6px 4px", border: "1px solid #e2e8f0", verticalAlign: "top" }}>
-                                            <ul style={{ margin: 0, paddingLeft: 10, fontSize: "6pt", color: "#475569" }}>
+                                        <td style={{ padding: "8px 6px", border: "1px solid #c8d6e5", verticalAlign: "middle" }}>
+                                            <ul style={{ margin: 0, paddingLeft: 12, fontSize: "6.5pt", color: "#475569", wordBreak: "break-word" }}>
                                                 {fila.legal?.map((l: string, j: number) => (
-                                                    <li key={j} style={{ paddingBottom: 2 }}>{l}</li>
+                                                    <li key={j} style={{ paddingBottom: 3 }}>{l}</li>
                                                 ))}
                                             </ul>
                                         </td>
