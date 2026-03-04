@@ -111,7 +111,7 @@ export default function IPERPreview({ data }: IPERPreviewProps) {
                                         textAlign: "center", verticalAlign: "middle", fontSize: "7pt", fontWeight: 800,
                                         textTransform: "uppercase", letterSpacing: 0.2,
                                         border: "1px solid #c8d6e5", lineHeight: 1.15,
-                                        width: i === 0 ? "8%" : i === 1 ? "12.5%" : i === 2 ? "12.5%" : i === 3 ? "9%" : i === 4 ? "40%" : i === 5 ? "9%" : "9%"
+                                        width: i === 0 ? "8%" : i === 1 ? "12%" : i === 2 ? "12%" : i === 3 ? "11%" : i === 4 ? "38%" : i === 5 ? "11%" : "8%"
                                     }}>{h}</th>
                                 ))}
                             </tr>
