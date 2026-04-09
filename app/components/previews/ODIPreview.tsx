@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ODIData } from "../forms/ODIForm";
 import SignatureUpload from "../SignatureUpload";
+import EditableCell from "../EditableCell";
 
 interface Props {
     data: ODIData;
@@ -22,6 +23,7 @@ const RIESGOS_BIOTICOS = [
 export default function ODIPreview({ data }: Props) {
     const [firmaTrabajador, setFirmaTrabajador] = useState<string | null>(null);
     const [firmaEmpresa, setFirmaEmpresa] = useState<string | null>(null);
+    const [notas, setNotas] = useState("");
 
     const CODE = "WA-SST-FOR-06";
     const VERSION = "01";
@@ -38,9 +40,9 @@ export default function ODIPreview({ data }: Props) {
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "9pt", border: "1px solid #000" }}>
                 <thead>
                     <tr style={{ backgroundColor: "#e0e0e0" }}>
-                        <th style={{ border: "1px solid #000", padding: "6px", width: "25%" }}>PELIGRO</th>
-                        <th style={{ border: "1px solid #000", padding: "6px", width: "30%" }}>RIESGO ASOCIADO</th>
-                        <th style={{ border: "1px solid #000", padding: "6px", width: "45%" }}>MEDIDAS PREVENTIVAS / MÉTODOS DE TRABAJO CORRECTO</th>
+                        <th style={{ border: "1px solid #000", padding: "6px", width: "25%" }}><EditableCell>PELIGRO</EditableCell></th>
+                        <th style={{ border: "1px solid #000", padding: "6px", width: "30%" }}><EditableCell>RIESGO ASOCIADO</EditableCell></th>
+                        <th style={{ border: "1px solid #000", padding: "6px", width: "45%" }}><EditableCell>MEDIDAS PREVENTIVAS / MÉTODOS DE TRABAJO CORRECTO</EditableCell></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,7 +62,7 @@ export default function ODIPreview({ data }: Props) {
         <div className="bg-gray-200 p-4 sm:p-8 ">
             <div
                 id="odi-preview"
-                className="bg-white shadow-2xl relative pdf-container"
+                className="bg-white shadow-2xl relative pdf-container pdf-document pdf-page"
                 style={{
                     width: "210mm",
                     minHeight: "297mm",
@@ -97,7 +99,7 @@ export default function ODIPreview({ data }: Props) {
                 </table>
 
                 {/* ===== PÁRRAFO LEGAL ===== */}
-                <div style={{ textAlign: "justify", marginBottom: "20px", fontSize: "9.5pt", lineHeight: "1.4" }}>
+                <div className="pdf-text-card" style={{ textAlign: "justify", marginBottom: "20px", fontSize: "9.5pt", lineHeight: "1.4" }}>
                     En cumplimiento al <strong>Artículo 15 del D.S. N° 44</strong> (Reglamento sobre la Gestión de los Riesgos Profesionales),
                     se garantiza informar al trabajador/a, de forma oportuna y adecuada previo al inicio de sus labores, sobre los riesgos
                     inherentes a su actividad, las medidas preventivas aplicables, los procedimientos de trabajo correctos y las
@@ -173,6 +175,15 @@ export default function ODIPreview({ data }: Props) {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Notas adicionales */}
+                {notas && <div style={{ fontWeight: 700, fontSize: "9pt", marginTop: "12px", marginBottom: "4px" }}>Notas Adicionales</div>}
+                <textarea
+                    value={notas}
+                    onChange={e => setNotas(e.target.value)}
+                    placeholder="Haz clic aquí para agregar notas u observaciones adicionales..."
+                    style={{ width: "100%", minHeight: notas ? "70px" : "28px", fontSize: "8.5pt", border: "1px dashed #bbb", borderRadius: "4px", padding: "6px 10px", resize: "vertical", color: "#333", background: "transparent", outline: "none", fontFamily: "inherit", lineHeight: "1.5", marginTop: "8px" }}
+                />
 
                 {/* ===== FOOTER ESTÁNDAR ===== */}
                 {/* Usamos fixed postion via CSS to repeat or absolute for single page, we'll keep it absolute since it's hard to predict in PDF, html2pdf has limitations */}

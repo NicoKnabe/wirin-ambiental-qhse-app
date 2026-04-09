@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Letterhead from "../Letterhead";
 import { SGSSTData } from "../forms/SGSSTForm";
+import EditableCell from "../EditableCell";
 import SignatureUpload from "../SignatureUpload";
 
 interface SGSSTPreviewProps { data: SGSSTData; }
@@ -49,6 +50,7 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
     const [sig1, setSig1] = useState<string | null>(null);
     const [sig2, setSig2] = useState<string | null>(null);
     const [sig3, setSig3] = useState<string | null>(null);
+    const [notas, setNotas] = useState("");
 
     return (
         <div id="sgsst-preview" className="pdf-document">
@@ -97,7 +99,7 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
                 <div className="pdf-section-title">3. Marco Legal y Normativo</div>
                 <div className="pdf-section-body">Este SGSST se fundamenta y da cumplimiento a las siguientes normativas:</div>
                 <table className="pdf-table">
-                    <thead><tr><th style={{ width: "30%" }}>Normativa</th><th>Descripción</th></tr></thead>
+                    <thead><tr><th style={{ width: "30%" }}><EditableCell>Normativa</EditableCell></th><th><EditableCell align="left">Descripción</EditableCell></th></tr></thead>
                     <tbody>
                         {[
                             ["Ley N° 16.744", "Seguros contra Riesgos de Accidentes del Trabajo y Enfermedades Profesionales. Establece las obligaciones del empleador y derechos del trabajador."],
@@ -118,7 +120,7 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
 
                 <div className="pdf-section-title">5. Estructura y Responsabilidades</div>
                 <table className="pdf-table">
-                    <thead><tr><th style={{ width: "30%" }}>Cargo / Rol</th><th>Responsabilidades SSO</th></tr></thead>
+                    <thead><tr><th style={{ width: "30%" }}><EditableCell>Cargo / Rol</EditableCell></th><th><EditableCell align="left">Responsabilidades SSO</EditableCell></th></tr></thead>
                     <tbody>
                         <tr>
                             <td style={{ fontWeight: 600, color: "#1B5E20" }}>Jefe de Proyecto<br /><span style={{ fontWeight: 400, fontSize: "8pt" }}>{PM}</span></td>
@@ -138,7 +140,7 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
                 <div className="pdf-section-title">6. Competencia, Formación y Toma de Conciencia</div>
                 <div className="pdf-section-body">Todo trabajador que ingrese al proyecto <strong>{P}</strong> en <strong>{L}</strong> deberá contar con:</div>
                 <table className="pdf-table">
-                    <thead><tr><th>Requisito</th><th>Descripción</th><th style={{ width: "20%" }}>Responsable</th></tr></thead>
+                    <thead><tr><th><EditableCell>Requisito</EditableCell></th><th><EditableCell align="left">Descripción</EditableCell></th><th style={{ width: "20%" }}><EditableCell>Responsable</EditableCell></th></tr></thead>
                     <tbody>
                         {[
                             ["Obligación de Informar (ODI/DAS)", "Registro firmado que acredite la inducción sobre los riesgos específicos de su labor, conforme al Art. 52 DS 44.", SSO],
@@ -157,7 +159,7 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
                 <div className="pdf-section-title">8. Control Operacional</div>
                 <div className="pdf-section-body">Para garantizar la seguridad en terreno, se implementarán los siguientes controles críticos:</div>
                 <table className="pdf-table">
-                    <thead><tr><th style={{ width: "30%" }}>Control</th><th>Descripción</th><th style={{ width: "20%" }}>Frecuencia</th></tr></thead>
+                    <thead><tr><th style={{ width: "30%" }}><EditableCell>Control</EditableCell></th><th><EditableCell align="left">Descripción</EditableCell></th><th style={{ width: "20%" }}><EditableCell>Frecuencia</EditableCell></th></tr></thead>
                     <tbody>
                         {[
                             ["Procedimientos de Trabajo Seguro (PTS)", "Ninguna tarea crítica se ejecutará sin su respectivo PTS difundido y firmado por todos los trabajadores involucrados.", "Por actividad"],
@@ -174,7 +176,7 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
                 <div className="pdf-section-title">9. Preparación y Respuesta ante Emergencias</div>
                 <div className="pdf-section-body">Se mantendrá un Plan de Emergencia Local ajustado a la geografía de <strong>{L}{R ? ", Región de " + R : ""}</strong>. En caso de accidente, se activará la derivación inmediata al centro de salud de la mutualidad en convenio más cercano.</div>
                 <table className="pdf-table">
-                    <thead><tr><th>Tipo de Emergencia</th><th>Acción Inmediata</th><th style={{ width: "25%" }}>Contacto</th></tr></thead>
+                    <thead><tr><th><EditableCell>Tipo de Emergencia</EditableCell></th><th><EditableCell align="left">Acción Inmediata</EditableCell></th><th style={{ width: "25%" }}><EditableCell>Contacto</EditableCell></th></tr></thead>
                     <tbody>
                         {[
                             ["Accidente con lesión", "Prestar primeros auxilios, llamar a Mutualidad, completar formulario DIAT dentro de 24h.", "Fono ACHS: 600 600 2247"],
@@ -206,6 +208,12 @@ export default function SGSSTPreview({ data }: SGSSTPreviewProps) {
                         <SignatureUpload label="Revisó" name={PM} role="Jefe de Proyecto — Wirin Ambiental" signatureDataUrl={sig2} onSignatureChange={setSig2} />
                         <SignatureUpload label="Aprobó" name="Dirección General" role="Wirin Ambiental" signatureDataUrl={sig3} onSignatureChange={setSig3} />
                     </div>
+                </div>
+
+                {/* Notas adicionales */}
+                <div style={{ marginTop: "16px" }}>
+                    {notas && <div className="pdf-section-title">Notas Adicionales</div>}
+                    <textarea value={notas} onChange={e => setNotas(e.target.value)} placeholder="Haz clic aquí para agregar notas u observaciones adicionales..." style={{ width: "100%", minHeight: notas ? "80px" : "32px", fontSize: "9pt", border: "1px dashed #c8e6c9", borderRadius: "4px", padding: "8px 10px", resize: "vertical", color: "#333", background: "transparent", outline: "none", fontFamily: "inherit", lineHeight: "1.5" }} />
                 </div>
 
                 {/* Single Continuous Footer at the very bottom */}

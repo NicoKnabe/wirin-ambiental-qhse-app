@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Letterhead from "../Letterhead";
 import { PPRData } from "../forms/PPRForm";
+import EditableCell from "../EditableCell";
 import SignatureUpload from "../SignatureUpload";
 
 interface PPRPreviewProps { data: PPRData; }
@@ -74,6 +75,7 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
     const [sig1, setSig1] = useState<string | null>(null);
     const [sig2, setSig2] = useState<string | null>(null);
     const [sig3, setSig3] = useState<string | null>(null);
+    const [notas, setNotas] = useState("");
 
     return (
         <div id="ppr-preview" className="pdf-document">
@@ -121,7 +123,7 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
                 <div className="pdf-section-title">3. Objetivos</div>
                 <div className="pdf-section-body"><strong>3.1. Objetivo General:</strong> Prevenir los accidentes del trabajo y enfermedades profesionales en la ejecución del proyecto {P}, aplicando la gestión preventiva de riesgos de acuerdo al DS 44 (2024).</div>
                 <table className="pdf-table" style={{ fontSize: "8.5pt" }}>
-                    <thead><tr><th>Objetivo Específico</th><th style={{ width: "20%" }}>Meta</th><th style={{ width: "25%" }}>Indicador</th></tr></thead>
+                    <thead><tr><th><EditableCell align="left">Objetivo Específico</EditableCell></th><th style={{ width: "20%" }}><EditableCell>Meta</EditableCell></th><th style={{ width: "25%" }}><EditableCell>Indicador</EditableCell></th></tr></thead>
                     <tbody>
                         {[
                             ["Mantener Tasa de Frecuencia (TF) de accidentes en cero", "TF = 0", "N° acc. fatales o con JTP / HHT x 10⁶"],
@@ -136,7 +138,7 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
 
                 <div className="pdf-section-title">4. Definiciones</div>
                 <table className="pdf-table" style={{ fontSize: "8.5pt" }}>
-                    <thead><tr><th style={{ width: "22%" }}>Término</th><th>Definición</th></tr></thead>
+                    <thead><tr><th style={{ width: "22%" }}><EditableCell>Término</EditableCell></th><th><EditableCell align="left">Definición</EditableCell></th></tr></thead>
                     <tbody>
                         {[
                             ["Accidente del Trabajo", "Toda lesión sufrida a causa o con ocasión del trabajo (Art. 5° Ley 16.744)."],
@@ -161,7 +163,7 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
 
                 <div className="pdf-section-title">6. Responsabilidades</div>
                 <table className="pdf-table" style={{ fontSize: "8.5pt" }}>
-                    <thead><tr><th style={{ width: "25%" }}>Rol</th><th>Responsabilidades Clave en Prevención</th></tr></thead>
+                    <thead><tr><th style={{ width: "25%" }}><EditableCell>Rol</EditableCell></th><th><EditableCell align="left">Responsabilidades Clave en Prevención</EditableCell></th></tr></thead>
                     <tbody>
                         {[
                             ["Gerencia Wirin Ambiental", "Asignar recursos humanos y económicos. Aprobar y firmar el Programa de Prevención. Revisar anualmente el desempeño del SGSST."],
@@ -177,7 +179,7 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
                 <div className="pdf-section-title">7. Elementos del Plan de Gestión Preventiva</div>
                 <div className="pdf-section-body">Conforme al DS 44 (2024), los elementos fundamentales de gestión preventiva implementados son:</div>
                 <table className="pdf-table" style={{ fontSize: "8.5pt" }}>
-                    <thead><tr><th style={{ width: "35%" }}>Elemento</th><th>Descripción</th></tr></thead>
+                    <thead><tr><th style={{ width: "35%" }}><EditableCell>Elemento</EditableCell></th><th><EditableCell align="left">Descripción</EditableCell></th></tr></thead>
                     <tbody>
                         {[
                             ["Matriz HIRA", "Identificación sistemática (HIRA) de peligros y evaluación de riesgos por proceso y puesto de trabajo, con perspectiva de género."],
@@ -195,7 +197,7 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
                 <div className="pdf-section-title">8. Análisis de Gestión Preventiva</div>
                 <div className="pdf-section-body">El análisis de gestión contempla la revisión trimestral de los siguientes indicadores de desempeño, reportados a {C} conforme al DS 76:</div>
                 <table className="pdf-table" style={{ fontSize: "8.5pt" }}>
-                    <thead><tr><th>Indicador</th><th style={{ width: "20%" }}>Fórmula</th><th style={{ width: "15%" }}>Meta</th><th style={{ width: "20%" }}>Frecuencia</th></tr></thead>
+                    <thead><tr><th><EditableCell align="left">Indicador</EditableCell></th><th style={{ width: "20%" }}><EditableCell>Fórmula</EditableCell></th><th style={{ width: "15%" }}><EditableCell>Meta</EditableCell></th><th style={{ width: "20%" }}><EditableCell>Frecuencia</EditableCell></th></tr></thead>
                     <tbody>
                         {[
                             ["Tasa de Frecuencia (TF)", "N° acc. x 10⁶ / HHT", "TF = 0", "Mensual"],
@@ -209,7 +211,7 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
                 </table>
 
                 <div className="pdf-section-title" style={{ marginTop: "24px" }}>9. Plan de Trabajo — Carta Gantt {year}</div>
-                <div style={{ fontSize: "8pt", color: "#6b7280", marginBottom: "8px" }}>
+                <div className="pdf-text-card" style={{ fontSize: "8pt", color: "#374151" }}>
                     Distribución anual de actividades de prevención para el proyecto {P}. Actualizado conforme DS 44 (2024).
                 </div>
 
@@ -336,6 +338,12 @@ export default function PPRPreview({ data }: PPRPreviewProps) {
                         <SignatureUpload label="Revisó" name={rev} role={revisadoRole} signatureDataUrl={sig2} onSignatureChange={setSig2} />
                         <SignatureUpload label="Aprobó" name={apr} role={aprobadoRole} signatureDataUrl={sig3} onSignatureChange={setSig3} />
                     </div>
+                </div>
+
+                {/* Notas adicionales */}
+                <div style={{ marginTop: "16px" }}>
+                    {notas && <div className="pdf-section-title">Notas Adicionales</div>}
+                    <textarea value={notas} onChange={e => setNotas(e.target.value)} placeholder="Haz clic aquí para agregar notas u observaciones adicionales..." style={{ width: "100%", minHeight: notas ? "80px" : "32px", fontSize: "9pt", border: "1px dashed #c8e6c9", borderRadius: "4px", padding: "8px 10px", resize: "vertical", color: "#333", background: "transparent", outline: "none", fontFamily: "inherit", lineHeight: "1.5" }} />
                 </div>
 
                 {/* Single Continuous Footer at the very bottom */}

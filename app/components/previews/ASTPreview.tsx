@@ -4,6 +4,7 @@ import { useState } from "react";
 import Letterhead from "../Letterhead";
 import { ASTData, AST_PPE_LIST } from "../forms/ASTForm";
 import SignatureUpload from "../SignatureUpload";
+import EditableCell from "../EditableCell";
 
 interface ASTPreviewProps { data: ASTData; }
 
@@ -25,6 +26,9 @@ export default function ASTPreview({ data }: ASTPreviewProps) {
     const [workerSigs, setWorkerSigs] = useState<Record<string, string | null>>({});
     const [supSig, setSupSig] = useState<string | null>(null);
     const [ssoSig, setSsoSig] = useState<string | null>(null);
+
+    // Notas adicionales
+    const [notas, setNotas] = useState("");
 
     const updateWorkerSig = (id: string, val: string | null) => setWorkerSigs(p => ({ ...p, [id]: val }));
 
@@ -74,10 +78,10 @@ export default function ASTPreview({ data }: ASTPreviewProps) {
                 <table className="pdf-table">
                     <thead>
                         <tr>
-                            <th style={{ width: "6%" }}>N°</th>
-                            <th style={{ width: "28%" }}>Secuencia del Trabajo</th>
-                            <th style={{ width: "28%" }}>Peligros / Riesgos</th>
-                            <th style={{ width: "38%" }}>Medidas de Control</th>
+                            <th style={{ width: "6%" }}><EditableCell>N°</EditableCell></th>
+                            <th style={{ width: "28%" }}><EditableCell>Secuencia del Trabajo</EditableCell></th>
+                            <th style={{ width: "28%" }}><EditableCell>Peligros / Riesgos</EditableCell></th>
+                            <th style={{ width: "38%" }}><EditableCell>Medidas de Control</EditableCell></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -114,10 +118,10 @@ export default function ASTPreview({ data }: ASTPreviewProps) {
                 <table className="pdf-table">
                     <thead>
                         <tr>
-                            <th style={{ width: "30%" }}>Nombre Completo</th>
-                            <th style={{ width: "15%" }}>RUT</th>
-                            <th style={{ width: "25%" }}>Cargo / Especialidad</th>
-                            <th style={{ width: "30%" }}>Firma Digital</th>
+                            <th style={{ width: "30%" }}><EditableCell>Nombre Completo</EditableCell></th>
+                            <th style={{ width: "15%" }}><EditableCell>RUT</EditableCell></th>
+                            <th style={{ width: "25%" }}><EditableCell>Cargo / Especialidad</EditableCell></th>
+                            <th style={{ width: "30%" }}><EditableCell>Firma Digital</EditableCell></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -167,6 +171,30 @@ export default function ASTPreview({ data }: ASTPreviewProps) {
                             onSignatureChange={setSsoSig}
                         />
                     </div>
+                </div>
+
+                {/* Notas adicionales */}
+                <div style={{ marginTop: "16px" }}>
+                    {notas && <div className="pdf-section-title">Notas Adicionales</div>}
+                    <textarea
+                        value={notas}
+                        onChange={e => setNotas(e.target.value)}
+                        placeholder="Haz clic aquí para agregar notas, observaciones o texto adicional al documento..."
+                        style={{
+                            width: "100%",
+                            minHeight: notas ? "80px" : "32px",
+                            fontSize: "9pt",
+                            border: "1px dashed #c8e6c9",
+                            borderRadius: "4px",
+                            padding: "8px 10px",
+                            resize: "vertical",
+                            color: "#333",
+                            background: "transparent",
+                            outline: "none",
+                            fontFamily: "inherit",
+                            lineHeight: "1.5",
+                        }}
+                    />
                 </div>
 
                 <DocFooter code={CODE} version={version} date={docDate} page={1} total={1} />

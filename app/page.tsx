@@ -217,7 +217,8 @@ export default function HomePage() {
   const handleDownloadPDF = useReactToPrint({
     contentRef,
     documentTitle: `WirinAmbiental_${activeTemplate.toUpperCase()}_${today.replace(/-/g, "")}`,
-    onPrintError: (error) => console.error("Error al imprimir:", error),
+    onBeforePrint: () => new Promise<void>((resolve) => setTimeout(resolve, 250)),
+    onPrintError: (errorLocation, error) => console.error("Error al imprimir:", errorLocation, error),
   });
 
   return (
@@ -321,7 +322,7 @@ export default function HomePage() {
             <div style={{ padding: "14px 16px 12px" }}>
               <button
                 className="btn-export"
-                onClick={handleDownloadPDF}
+                onClick={() => handleDownloadPDF()}
                 style={{ opacity: 1, cursor: "pointer" }}
               >
                 <>
@@ -332,7 +333,7 @@ export default function HomePage() {
               <div style={{ marginTop: "8px", textAlign: "center" }}>
                 <span style={{ fontSize: "10px", color: "#9ca3af" }}>
                   {templates.find(t => t.id === activeTemplate)?.icon}&nbsp;
-                  {templates.find(t => t.id === activeTemplate)?.label}&nbsp;·&nbsp;Carta (Letter)
+                  {templates.find(t => t.id === activeTemplate)?.label}&nbsp;·&nbsp;A4 (21×29,7 cm)
                 </span>
               </div>
             </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Letterhead from "../Letterhead";
 import { PTSData } from "../forms/PTSForm";
 import SignatureUpload from "../SignatureUpload";
+import EditableCell from "../EditableCell";
 
 interface PTSPreviewProps { data: PTSData; }
 
@@ -52,7 +53,8 @@ function DocFooter({ code, version, date, page, total }: { code: string; version
 }
 
 // ─── Editable diffusion table row ────────────────────────────────────────────
-interface DiffRow { nombre: string; rut: string; cargo: string; fecha: string; sigUrl: string | null; }
+interface DiffRow { nombre: string; rut: string; cargo: string; fecha: string; sigUrl: string | null; extras: Record<string, string>; }
+interface ExtraCol { id: string; label: string; }
 
 export default function PTSPreview({ data }: PTSPreviewProps) {
     const P = data.projectName || "[Nombre del Proyecto]";
@@ -71,14 +73,43 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
     const [sig3, setSig3] = useState<string | null>(null);
 
     // Editable diffusion table
-    const blankRow = (): DiffRow => ({ nombre: "", rut: "", cargo: "", fecha: docDate, sigUrl: null });
-    const [diffRows, setDiffRows] = useState<DiffRow[]>(Array.from({ length: 8 }, blankRow));
+    const blankRow = (cols: ExtraCol[] = []): DiffRow => ({
+        nombre: "", rut: "", cargo: "", fecha: docDate, sigUrl: null,
+        extras: Object.fromEntries(cols.map(c => [c.id, ""])),
+    });
+    const [diffRows, setDiffRows] = useState<DiffRow[]>(Array.from({ length: 8 }, () => blankRow([])));
+    const [extraCols, setExtraCols] = useState<ExtraCol[]>([]);
 
-    const updateRow = (i: number, field: keyof DiffRow, val: string | null) => {
-        setDiffRows(prev => prev.map((r, idx) => idx === i ? { ...r, [field]: val } : r));
+    // Notas adicionales
+    const [notas, setNotas] = useState("");
+
+    const updateRow = (i: number, field: keyof DiffRow | string, val: string | null) => {
+        setDiffRows(prev => prev.map((r, idx) => {
+            if (idx !== i) return r;
+            if (field === "nombre" || field === "rut" || field === "cargo" || field === "fecha" || field === "sigUrl") {
+                return { ...r, [field]: val };
+            }
+            return { ...r, extras: { ...r.extras, [field]: val ?? "" } };
+        }));
     };
-    const addRow = () => setDiffRows(prev => [...prev, blankRow()]);
+    const addRow = () => setDiffRows(prev => [...prev, blankRow(extraCols)]);
     const removeRow = (i: number) => setDiffRows(prev => prev.filter((_, idx) => idx !== i));
+
+    const addColumn = () => {
+        const id = `col_${Date.now()}`;
+        setExtraCols(prev => [...prev, { id, label: "Nueva Columna" }]);
+        setDiffRows(prev => prev.map(r => ({ ...r, extras: { ...r.extras, [id]: "" } })));
+    };
+    const removeColumn = (colId: string) => {
+        setExtraCols(prev => prev.filter(c => c.id !== colId));
+        setDiffRows(prev => prev.map(r => {
+            const { [colId]: _, ...rest } = r.extras;
+            return { ...r, extras: rest };
+        }));
+    };
+    const updateColLabel = (colId: string, label: string) => {
+        setExtraCols(prev => prev.map(c => c.id === colId ? { ...c, label } : c));
+    };
 
     return (
         <div id="pts-preview" className="pdf-document">
@@ -105,7 +136,7 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
 
                 <div className="pdf-section-title">2. Responsabilidades</div>
                 <table className="pdf-table">
-                    <thead><tr><th style={{ width: "30%" }}>Cargo</th><th>Responsabilidades</th></tr></thead>
+                    <thead><tr><th style={{ width: "30%" }}><EditableCell>Cargo</EditableCell></th><th><EditableCell align="left">Responsabilidades</EditableCell></th></tr></thead>
                     <tbody>
                         <tr><td style={{ fontWeight: 600 }}>Asesor SSO<br /><span style={{ fontWeight: 400, fontSize: "7.5pt" }}>{SSO}</span></td><td>Difundir y verificar cumplimiento de este PTS. Supervisar uso de EPP. Investigar cualquier incidente.</td></tr>
                         <tr><td style={{ fontWeight: 600 }}>Jefe de Proyecto<br /><span style={{ fontWeight: 400, fontSize: "7.5pt" }}>{PM}</span></td><td>Proveer los recursos necesarios. Validar condiciones de seguridad antes de iniciar labores. Reportar a {C}.</td></tr>
@@ -115,7 +146,7 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
 
                 {/* Section 3: EPP — corrected list */}
                 <div className="pdf-section-title">3. EPP Requerido</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", fontSize: "9pt", marginBottom: "12px" }}>
+                <div className="pdf-text-card" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
                     {EPP_LISTA.map((item) => (
                         <div key={item} style={{ display: "flex", gap: "6px", alignItems: "flex-start" }}>
                             <span style={{ color: "#4CAF50", fontWeight: 700, fontSize: "10pt", lineHeight: "1.3" }}>✓</span>
@@ -129,12 +160,12 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
                 <table className="pdf-table" style={{ fontSize: "8pt" }}>
                     <thead>
                         <tr>
-                            <th style={{ width: "18%" }}>Actividad</th>
-                            <th style={{ width: "16%" }}>Riesgo Identificado</th>
-                            <th style={{ width: "13%" }}>Consecuencia</th>
-                            <th style={{ width: "30%" }}>Medida Preventiva / Control</th>
-                            <th style={{ width: "14%" }}>EPP Requerido</th>
-                            <th style={{ width: "9%" }}>Nivel</th>
+                            <th style={{ width: "18%" }}><EditableCell>Actividad</EditableCell></th>
+                            <th style={{ width: "16%" }}><EditableCell>Riesgo Identificado</EditableCell></th>
+                            <th style={{ width: "13%" }}><EditableCell>Consecuencia</EditableCell></th>
+                            <th style={{ width: "30%" }}><EditableCell>Medida Preventiva / Control</EditableCell></th>
+                            <th style={{ width: "14%" }}><EditableCell>EPP Requerido</EditableCell></th>
+                            <th style={{ width: "9%" }}><EditableCell>Nivel</EditableCell></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -154,14 +185,13 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
                 </table>
 
                 {/* NUEVA SECCIÓN: PROHIBICIONES DS 44 */}
-                <div className="mb-4 print:break-inside-avoid" style={{ marginTop: "14px" }}>
+                <div style={{ marginTop: "14px" }}>
                     <div className="pdf-section-title">
                         5. Prohibiciones y Restricciones Operacionales (DS 44)
                     </div>
-
-                    <div className="px-2">
-                        <h3 className="font-bold text-sm text-black mb-1 mt-2">5.1 Prohibiciones</h3>
-                        <ul className="list-disc pl-5 text-xs text-justify space-y-1 text-black mb-4">
+                    <div className="pdf-text-card">
+                        <p style={{ fontWeight: 700, fontSize: "9pt", marginBottom: "6px" }}>5.1 Prohibiciones</p>
+                        <ul style={{ paddingLeft: "18px", fontSize: "8.5pt", lineHeight: "1.6", marginBottom: "10px" }}>
                             <li>Se prohíbe realizar actividades sin AST firmado.</li>
                             <li>Se prohíbe intervenir zonas sin señalización y delimitación previa.</li>
                             <li>Se prohíbe manipular reptiles sin EPP y experiencia acreditada.</li>
@@ -174,8 +204,8 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
                             <li>Se prohíbe manipular fauna no objetivo.</li>
                             <li>Se prohíbe iniciar actividades sin autorización del Jefe de Proyecto.</li>
                         </ul>
-                        <h3 className="font-bold text-sm text-black mb-1">5.2 Restricciones Operacionales</h3>
-                        <ul className="list-disc pl-5 text-xs text-justify space-y-1 text-black">
+                        <p style={{ fontWeight: 700, fontSize: "9pt", marginBottom: "6px" }}>5.2 Restricciones Operacionales</p>
+                        <ul style={{ paddingLeft: "18px", fontSize: "8.5pt", lineHeight: "1.6" }}>
                             <li>Actividades restringidas a horarios con visibilidad adecuada.</li>
                             <li>Restricción total con índice UV extremo.</li>
                             <li>Restricción de desplazamiento en rutas no aprobadas.</li>
@@ -237,7 +267,7 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
 
                 {/* Editable diffusion table */}
                 <div className="pdf-section-title" style={{ marginTop: "18px" }}>8. Registro de Difusión — Firma de Trabajadores</div>
-                <div style={{ fontSize: "8.5pt", color: "#6b7280", marginBottom: "8px" }}>
+                <div className="pdf-text-card" style={{ fontSize: "8.5pt", color: "#374151", fontStyle: "italic" }}>
                     Acredito haber recibido, leído y comprendido el presente Procedimiento de Trabajo Seguro, comprometiéndome a su cumplimiento estricto.
                 </div>
 
@@ -245,12 +275,36 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
                 <table className="pdf-table" style={{ fontSize: "8pt" }}>
                     <thead>
                         <tr>
-                            <th style={{ width: "4%" }}>N°</th>
-                            <th style={{ width: "28%" }}>Nombre Completo</th>
-                            <th style={{ width: "16%" }}>RUT</th>
-                            <th style={{ width: "18%" }}>Cargo</th>
-                            <th style={{ width: "12%" }}>Fecha</th>
-                            <th>Firma Digital</th>
+                            <th style={{ width: "4%" }}><EditableCell>N°</EditableCell></th>
+                            <th style={{ width: "28%" }}><EditableCell>Nombre Completo</EditableCell></th>
+                            <th style={{ width: "16%" }}><EditableCell>RUT</EditableCell></th>
+                            <th style={{ width: "18%" }}><EditableCell>Cargo</EditableCell></th>
+                            <th style={{ width: "12%" }}><EditableCell>Fecha</EditableCell></th>
+                            <th><EditableCell>Firma Digital</EditableCell></th>
+                            {extraCols.map(col => (
+                                <th key={col.id} style={{ minWidth: "80px" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
+                                        <input
+                                            value={col.label}
+                                            onChange={e => updateColLabel(col.id, e.target.value)}
+                                            style={{ background: "transparent", border: "none", outline: "none", fontWeight: "inherit", fontSize: "inherit", fontFamily: "inherit", color: "inherit", textAlign: "center", width: "100%", minWidth: "50px" }}
+                                        />
+                                        <button
+                                            onClick={() => removeColumn(col.id)}
+                                            title="Eliminar columna"
+                                            className="hide-on-print"
+                                            style={{ background: "none", border: "none", color: "#e57373", cursor: "pointer", fontSize: "9pt", padding: "0", flexShrink: 0 }}
+                                        >✕</button>
+                                    </div>
+                                </th>
+                            ))}
+                            <th className="hide-on-print" style={{ width: "30px", padding: "0" }}>
+                                <button
+                                    onClick={addColumn}
+                                    title="Agregar columna"
+                                    style={{ background: "none", border: "none", color: "#4CAF50", cursor: "pointer", fontSize: "14pt", padding: "0 4px", fontWeight: 700 }}
+                                >+</button>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -299,10 +353,21 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
                                         <button
                                             onClick={() => removeRow(i)}
                                             title="Eliminar fila"
+                                            className="hide-on-print"
                                             style={{ background: "none", border: "none", color: "#e57373", cursor: "pointer", fontSize: "10pt", padding: "0 2px", flexShrink: 0 }}
                                         >✕</button>
                                     </div>
                                 </td>
+                                {extraCols.map(col => (
+                                    <td key={col.id} style={{ padding: "2px 4px", verticalAlign: "middle" }}>
+                                        <input
+                                            value={row.extras[col.id] ?? ""}
+                                            onChange={e => updateRow(i, col.id, e.target.value)}
+                                            style={{ width: "100%", border: "none", borderBottom: "1px solid #e0e0e0", fontSize: "8pt", padding: "2px 0", outline: "none", background: "transparent" }}
+                                        />
+                                    </td>
+                                ))}
+                                <td className="hide-on-print" />
                             </tr>
                         ))}
                     </tbody>
@@ -311,10 +376,35 @@ export default function PTSPreview({ data }: PTSPreviewProps) {
                 {/* Add row button */}
                 <button
                     onClick={addRow}
+                    className="hide-on-print"
                     style={{ marginTop: "8px", fontSize: "8pt", color: "#1B5E20", background: "#f0fdf4", border: "1px dashed #4CAF50", borderRadius: "4px", padding: "5px 14px", cursor: "pointer", display: "block" }}
                 >
                     + Agregar trabajador
                 </button>
+
+                {/* Notas adicionales */}
+                <div style={{ marginTop: "16px" }}>
+                    {notas && <div className="pdf-section-title">Notas Adicionales</div>}
+                    <textarea
+                        value={notas}
+                        onChange={e => setNotas(e.target.value)}
+                        placeholder="Haz clic aquí para agregar notas, observaciones o texto adicional al documento..."
+                        style={{
+                            width: "100%",
+                            minHeight: notas ? "80px" : "32px",
+                            fontSize: "9pt",
+                            border: "1px dashed #c8e6c9",
+                            borderRadius: "4px",
+                            padding: "8px 10px",
+                            resize: "vertical",
+                            color: "#333",
+                            background: "transparent",
+                            outline: "none",
+                            fontFamily: "inherit",
+                            lineHeight: "1.5",
+                        }}
+                    />
+                </div>
 
                 {/* Single Continuous Footer at the very bottom */}
                 <div style={{ marginTop: '40px' }}>

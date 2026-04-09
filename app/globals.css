@@ -136,7 +136,24 @@ body {
   font-size: 10pt;
   line-height: 1.7;
   text-align: justify;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  border: 1px solid #9ca3af;
+  border-radius: 6px;
+  padding: 10px 12px;
+  min-height: 40px;
+  background: #f9fafb;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.pdf-text-card {
+  border: 1px solid #9ca3af;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: #f9fafb;
+  font-size: 9pt;
+  line-height: 1.6;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
 .pdf-table {
@@ -320,6 +337,7 @@ body {
 
   /* Define physical paper and strip browser headers/margins */
   @page {
+    size: A4 portrait;
     margin: 15mm;
   }
 

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ComChecklistData, EQUIPOS_COMUNICACION } from "../forms/ComChecklistForm";
 import SignatureUpload from "../SignatureUpload";
+import EditableCell from "../EditableCell";
 
 interface Props {
     data: ComChecklistData;
@@ -8,6 +9,7 @@ interface Props {
 
 export default function ComChecklistPreview({ data }: Props) {
     const [firmaJefe, setFirmaJefe] = useState<string | null>(null);
+    const [notas, setNotas] = useState("");
 
     const CODE = "WA-SST-FOR-05";
     const VERSION = "01";
@@ -21,7 +23,7 @@ export default function ComChecklistPreview({ data }: Props) {
         <div className="bg-gray-200 p-4 sm:p-8 ">
             <div
                 id="comunicacion-preview"
-                className="bg-white shadow-2xl relative"
+                className="bg-white shadow-2xl relative pdf-document pdf-page"
                 style={{
                     width: "210mm",
                     padding: "20mm 15mm 25mm 15mm",
@@ -88,11 +90,11 @@ export default function ComChecklistPreview({ data }: Props) {
                 <table className="pdf-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "9pt", marginBottom: "20px" }}>
                     <thead>
                         <tr>
-                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "5%" }}>N°</th>
-                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "left" }}>Equipo de Comunicación a Inspeccionar</th>
-                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "12%" }}>OK</th>
-                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "12%" }}>Malo</th>
-                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "12%" }}>N/A</th>
+                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "5%" }}><EditableCell>N°</EditableCell></th>
+                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "left" }}><EditableCell align="left">Equipo de Comunicación a Inspeccionar</EditableCell></th>
+                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "12%" }}><EditableCell>OK</EditableCell></th>
+                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "12%" }}><EditableCell>Malo</EditableCell></th>
+                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "12%" }}><EditableCell>N/A</EditableCell></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -156,6 +158,8 @@ export default function ComChecklistPreview({ data }: Props) {
                 }}>
                     Wirin Ambiental - Checklist Comunicación Zonas Remotas
                 </div>
+                {notas && <div style={{ fontWeight: 700, fontSize: "9pt", marginTop: "12px", marginBottom: "4px" }}>Notas Adicionales</div>}
+                <textarea value={notas} onChange={e => setNotas(e.target.value)} placeholder="Haz clic aquí para agregar notas u observaciones adicionales..." style={{ width: "100%", minHeight: notas ? "70px" : "28px", fontSize: "8.5pt", border: "1px dashed #bbb", borderRadius: "4px", padding: "6px 10px", resize: "vertical", color: "#333", background: "transparent", outline: "none", fontFamily: "inherit", lineHeight: "1.5", marginTop: "8px" }} />
 
             </div>
         </div>

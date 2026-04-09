@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { CharlaData } from "../forms/CharlaForm";
 import SignatureUpload from "../SignatureUpload";
+import EditableCell from "../EditableCell";
 
 interface Props {
     data: CharlaData;
@@ -10,6 +11,7 @@ export default function CharlaPreview({ data }: Props) {
     const [firmasAsistentes, setFirmasAsistentes] = useState<Record<string, string>>({});
     const [firmaSupervisor, setFirmaSupervisor] = useState<string | null>(null);
     const [firmaAsesor, setFirmaAsesor] = useState<string | null>(null);
+    const [notas, setNotas] = useState("");
 
     const handleFirmaAsistente = (id: string, signature: string | null) => {
         if (signature) {
@@ -38,7 +40,7 @@ export default function CharlaPreview({ data }: Props) {
         <div className="bg-gray-200 p-4 sm:p-8 ">
             <div
                 id="charla-preview"
-                className="bg-white shadow-2xl relative"
+                className="bg-white shadow-2xl relative pdf-document pdf-page"
                 style={{
                     width: "210mm",
                     minHeight: "297mm",
@@ -107,17 +109,17 @@ export default function CharlaPreview({ data }: Props) {
                 <div style={{ backgroundColor: "#1B5E20", color: "white", padding: "4px 8px", fontWeight: "bold", fontSize: "10pt", marginBottom: "0", border: "1px solid #000", borderBottom: "none" }}>
                     2. REGISTRO DE ASISTENCIA Y COMPROMISO
                 </div>
-                <div style={{ fontSize: "8pt", textAlign: "justify", padding: "6px 0" }}>
+                <div className="pdf-text-card" style={{ fontSize: "8pt", textAlign: "justify", fontStyle: "italic" }}>
                     Los firmantes declaran haber asistido a la charla diaria de seguridad de 5 minutos, entender los riesgos potenciales de la actividad a ejecutar y las medidas de control establecidas, y se comprometen a aplicarlas en su labor diaria.
                 </div>
                 <table className="pdf-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "8pt", marginBottom: "20px" }}>
                     <thead>
                         <tr>
-                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "5%" }}>N°</th>
-                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "30%" }}>Nombre Completo</th>
-                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "15%" }}>RUT</th>
-                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "25%" }}>Cargo</th>
-                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "25%" }}>Firma Trabajador</th>
+                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "5%" }}><EditableCell>N°</EditableCell></th>
+                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "30%" }}><EditableCell>Nombre Completo</EditableCell></th>
+                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "15%" }}><EditableCell>RUT</EditableCell></th>
+                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "25%" }}><EditableCell>Cargo</EditableCell></th>
+                            <th style={{ border: "1px solid #000", padding: "6px", backgroundColor: "#e0e0e0", textAlign: "center", width: "25%" }}><EditableCell>Firma Trabajador</EditableCell></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -192,6 +194,29 @@ export default function CharlaPreview({ data }: Props) {
                         </tr>
                     </tbody>
                 </table>
+
+                {/* Notas adicionales */}
+                {notas && <div style={{ fontWeight: 700, fontSize: "9pt", marginTop: "12px", marginBottom: "4px" }}>Notas Adicionales</div>}
+                <textarea
+                    value={notas}
+                    onChange={e => setNotas(e.target.value)}
+                    placeholder="Haz clic aquí para agregar notas u observaciones adicionales..."
+                    style={{
+                        width: "100%",
+                        minHeight: notas ? "70px" : "28px",
+                        fontSize: "8.5pt",
+                        border: "1px dashed #bbb",
+                        borderRadius: "4px",
+                        padding: "6px 10px",
+                        resize: "vertical",
+                        color: "#333",
+                        background: "transparent",
+                        outline: "none",
+                        fontFamily: "inherit",
+                        lineHeight: "1.5",
+                        marginTop: "8px",
+                    }}
+                />
 
                 {/* ===== FOOTER ESTÁNDAR ===== */}
                 <div style={{

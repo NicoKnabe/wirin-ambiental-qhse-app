@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { PREData } from "../forms/PREForm";
 import SignatureUpload from "../SignatureUpload";
+import EditableCell from "../EditableCell";
 
 interface Props {
     data: PREData;
@@ -9,6 +10,7 @@ interface Props {
 export default function PREPreview({ data }: Props) {
     const [firmaSSO, setFirmaSSO] = useState<string | null>(null);
     const [firmaMandante, setFirmaMandante] = useState<string | null>(null);
+    const [notas, setNotas] = useState("");
 
     const CODE = "WA-PRE-001";
     const VERSION = "01";
@@ -200,11 +202,11 @@ export default function PREPreview({ data }: Props) {
                     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "8.5pt", border: "1px solid #000" }}>
                         <thead>
                             <tr style={{ backgroundColor: "#e0e0e0" }}>
-                                <th style={{ border: "1px solid #000", padding: "6px", width: "20%" }}>Nivel de Complejidad</th>
-                                <th style={{ border: "1px solid #000", padding: "6px", width: "25%" }}>Nombre Centro Médico</th>
-                                <th style={{ border: "1px solid #000", padding: "6px", width: "30%" }}>Dirección</th>
-                                <th style={{ border: "1px solid #000", padding: "6px", width: "10%", textAlign: "center" }}>Distancia</th>
-                                <th style={{ border: "1px solid #000", padding: "6px", width: "15%", textAlign: "center" }}>Tiempo Est.</th>
+                                <th style={{ border: "1px solid #000", padding: "6px", width: "20%" }}><EditableCell>Nivel de Complejidad</EditableCell></th>
+                                <th style={{ border: "1px solid #000", padding: "6px", width: "25%" }}><EditableCell>Nombre Centro Médico</EditableCell></th>
+                                <th style={{ border: "1px solid #000", padding: "6px", width: "30%" }}><EditableCell>Dirección</EditableCell></th>
+                                <th style={{ border: "1px solid #000", padding: "6px", width: "10%", textAlign: "center" }}><EditableCell>Distancia</EditableCell></th>
+                                <th style={{ border: "1px solid #000", padding: "6px", width: "15%", textAlign: "center" }}><EditableCell>Tiempo Est.</EditableCell></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -257,6 +259,12 @@ export default function PREPreview({ data }: Props) {
                             </tr>
                         </tbody>
                     </table>
+                </div>
+
+                {/* Notas adicionales */}
+                <div style={{ marginTop: "16px" }}>
+                    {notas && <div style={{ fontWeight: 700, fontSize: "9pt", marginBottom: "4px" }}>Notas Adicionales</div>}
+                    <textarea value={notas} onChange={e => setNotas(e.target.value)} placeholder="Haz clic aquí para agregar notas u observaciones adicionales..." style={{ width: "100%", minHeight: notas ? "70px" : "28px", fontSize: "8.5pt", border: "1px dashed #bbb", borderRadius: "4px", padding: "6px 10px", resize: "vertical", color: "#333", background: "transparent", outline: "none", fontFamily: "inherit", lineHeight: "1.5" }} />
                 </div>
 
                 {/* ===== OVERLAY FOOTER GLOBAL (Wirin Estándar) ===== */}

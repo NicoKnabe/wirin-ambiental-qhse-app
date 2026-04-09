@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { InvestigacionData } from "../forms/InvestigacionForm";
 import SignatureUpload from "../SignatureUpload";
+import EditableCell from "../EditableCell";
 
 interface Props {
     data: InvestigacionData;
@@ -10,6 +11,7 @@ export default function InvestigacionPreview({ data }: Props) {
     const [sig1, setSig1] = useState<string | null>(null);
     const [sig2, setSig2] = useState<string | null>(null);
     const [sig3, setSig3] = useState<string | null>(null);
+    const [notas, setNotas] = useState("");
 
     const CODE = "WA-INV-001";
     const VERSION = "01";
@@ -57,7 +59,7 @@ export default function InvestigacionPreview({ data }: Props) {
                 </table>
 
                 {/* ===== METODOLOGÍA ===== */}
-                <div style={{ fontSize: "9pt", textAlign: "justify", marginBottom: "15px", fontStyle: "italic", color: "#333" }}>
+                <div className="pdf-text-card" style={{ fontSize: "9pt", textAlign: "justify", marginBottom: "15px", fontStyle: "italic", color: "#333" }}>
                     "El objetivo principal es identificar las causas raíces mediante metodologías estandarizadas para evitar su repetición. El cierre del incidente solo se concretará una vez verificada la implementación efectiva de las medidas en terreno."
                 </div>
 
@@ -124,8 +126,8 @@ export default function InvestigacionPreview({ data }: Props) {
                             </th>
                         </tr>
                         <tr style={{ backgroundColor: "#f5f5f5" }}>
-                            <th style={{ width: "30%", border: "1px solid #000", padding: "6px", textAlign: "center" }}>Categoría (6M)</th>
-                            <th style={{ width: "70%", border: "1px solid #000", padding: "6px", textAlign: "center" }}>Causas Raíz Identificadas</th>
+                            <th style={{ width: "30%", border: "1px solid #000", padding: "6px", textAlign: "center" }}><EditableCell>Categoría (6M)</EditableCell></th>
+                            <th style={{ width: "70%", border: "1px solid #000", padding: "6px", textAlign: "center" }}><EditableCell>Causas Raíz Identificadas</EditableCell></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -165,9 +167,9 @@ export default function InvestigacionPreview({ data }: Props) {
                             </th>
                         </tr>
                         <tr style={{ backgroundColor: "#f5f5f5" }}>
-                            <th style={{ width: "50%", border: "1px solid #000", padding: "6px", textAlign: "center" }}>Medida Correctiva / Preventiva</th>
-                            <th style={{ width: "30%", border: "1px solid #000", padding: "6px", textAlign: "center" }}>Responsable</th>
-                            <th style={{ width: "20%", border: "1px solid #000", padding: "6px", textAlign: "center" }}>Plazo</th>
+                            <th style={{ width: "50%", border: "1px solid #000", padding: "6px", textAlign: "center" }}><EditableCell>Medida Correctiva / Preventiva</EditableCell></th>
+                            <th style={{ width: "30%", border: "1px solid #000", padding: "6px", textAlign: "center" }}><EditableCell>Responsable</EditableCell></th>
+                            <th style={{ width: "20%", border: "1px solid #000", padding: "6px", textAlign: "center" }}><EditableCell>Plazo</EditableCell></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -219,6 +221,12 @@ export default function InvestigacionPreview({ data }: Props) {
                             onSignatureChange={setSig3}
                         />
                     </div>
+                </div>
+
+                {/* Notas adicionales */}
+                <div style={{ marginTop: "16px" }}>
+                    {notas && <div style={{ fontWeight: 700, fontSize: "9pt", marginBottom: "4px" }}>Notas Adicionales</div>}
+                    <textarea value={notas} onChange={e => setNotas(e.target.value)} placeholder="Haz clic aquí para agregar notas u observaciones adicionales..." style={{ width: "100%", minHeight: notas ? "70px" : "28px", fontSize: "8.5pt", border: "1px dashed #bbb", borderRadius: "4px", padding: "6px 10px", resize: "vertical", color: "#333", background: "transparent", outline: "none", fontFamily: "inherit", lineHeight: "1.5" }} />
                 </div>
 
             </div>

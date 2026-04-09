@@ -4,6 +4,7 @@ import { useState } from "react";
 import Letterhead from "../Letterhead";
 import { EPPData } from "../forms/EPPForm";
 import SignatureUpload from "../SignatureUpload";
+import EditableCell from "../EditableCell";
 
 interface EPPPreviewProps { data: EPPData; }
 
@@ -63,6 +64,9 @@ export default function EPPPreview({ data }: EPPPreviewProps) {
     const [sigResp, setSigResp] = useState<string | null>(null);
     const [sigPM, setSigPM] = useState<string | null>(null);
 
+    // Notas adicionales
+    const [notas, setNotas] = useState("");
+
     return (
         <div id="epp-preview" className="pdf-document">
             <div className="pdf-page">
@@ -98,13 +102,13 @@ export default function EPPPreview({ data }: EPPPreviewProps) {
                 <table className="pdf-table" style={{ fontSize: "8.5pt" }}>
                     <thead>
                         <tr>
-                            <th style={{ width: "4%" }}>N°</th>
-                            <th style={{ width: "28%" }}>Elemento de Protección Personal</th>
-                            <th style={{ width: "18%" }}>Marca / Modelo</th>
-                            <th style={{ width: "14%" }}>Certificación</th>
-                            <th style={{ width: "10%" }}>Talla</th>
-                            <th style={{ width: "8%" }}>Cant.</th>
-                            <th>Acciones</th>
+                            <th style={{ width: "4%" }}><EditableCell>N°</EditableCell></th>
+                            <th style={{ width: "28%" }}><EditableCell>Elemento de Protección Personal</EditableCell></th>
+                            <th style={{ width: "18%" }}><EditableCell>Marca / Modelo</EditableCell></th>
+                            <th style={{ width: "14%" }}><EditableCell>Certificación</EditableCell></th>
+                            <th style={{ width: "10%" }}><EditableCell>Talla</EditableCell></th>
+                            <th style={{ width: "8%" }}><EditableCell>Cant.</EditableCell></th>
+                            <th className="hide-on-print">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -156,6 +160,30 @@ export default function EPPPreview({ data }: EPPPreviewProps) {
                     <SignatureUpload label="Recibió" name={W} role={`Trabajador — RUT: ${WR}`} signatureDataUrl={sigWorker} onSignatureChange={setSigWorker} />
                     <SignatureUpload label="Entregó" name={Resp} role="Asesor SSO — Wirin Ambiental" signatureDataUrl={sigResp} onSignatureChange={setSigResp} />
                     <SignatureUpload label="Validó" name={data.projectManager || "Jefe de Proyecto"} role="Jefe de Proyecto" signatureDataUrl={sigPM} onSignatureChange={setSigPM} />
+                </div>
+
+                {/* Notas adicionales */}
+                <div style={{ marginTop: "16px" }}>
+                    {notas && <div style={{ fontWeight: 700, fontSize: "9pt", color: "#1B5E20", textTransform: "uppercase", letterSpacing: "0.08em", borderBottom: "2px solid #4CAF50", paddingBottom: "4px", marginBottom: "8px" }}>Notas Adicionales</div>}
+                    <textarea
+                        value={notas}
+                        onChange={e => setNotas(e.target.value)}
+                        placeholder="Haz clic aquí para agregar notas, observaciones o texto adicional al documento..."
+                        style={{
+                            width: "100%",
+                            minHeight: notas ? "80px" : "32px",
+                            fontSize: "9pt",
+                            border: "1px dashed #c8e6c9",
+                            borderRadius: "4px",
+                            padding: "8px 10px",
+                            resize: "vertical",
+                            color: "#333",
+                            background: "transparent",
+                            outline: "none",
+                            fontFamily: "inherit",
+                            lineHeight: "1.5",
+                        }}
+                    />
                 </div>
 
                 <DocFooter code={CODE} version={version} date={docDate} page={1} total={1} />
